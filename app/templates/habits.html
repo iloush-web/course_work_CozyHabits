@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+
+{% block title %}Cozy Habits index{% endblock %}
+
+{% block content %}
+<h1>COZY HABITS</h1>
+<p>Привычки</p>
+<div id="all-habits">
+
+    <div class="habit-box">
+        <div class="habit-img-wrapper">
+            <img class="habit-img-frame" src="{{ url_for('static', filename='images/frames/frame_1.png') }}" alt="">
+            <img class="habit-img" src="{{ url_for('static', filename='images/book_draft.jpg') }}" alt="">
+        </div>
+        <h1 class="habit-text">Читать книжки</h1>
+        <p class="time-text">3 раза в неделю</p>
+    </div>
+
+    <div class="habit-box">
+        <div class="habit-img-wrapper">
+            <img class="habit-img-frame" src="{{ url_for('static', filename='images/frames/frame_1.png') }}" alt="">
+            <img class="habit-img" src="{{ url_for('static', filename='images/book_draft.jpg') }}" alt="">
+        </div>
+        <h1 class="habit-text">Читать книжки</h1>
+        <p class="time-text">3 раза в неделю</p>
+    </div>
+
+    <div class="habit-box">
+        <div class="habit-img-wrapper">
+            <img class="habit-img-frame" src="{{ url_for('static', filename='images/frames/frame_1.png') }}" alt="">
+            <img class="habit-img" src="{{ url_for('static', filename='images/book_draft.jpg') }}" alt="">
+        </div>
+        <h1 class="habit-text">Читать книжки</h1>
+        <p class="time-text">3 раза в неделю</p>
+    </div>
+
+    <div class="habit-box">
+        <div class="habit-img-wrapper">
+            <img class="habit-img-frame" src="{{ url_for('static', filename='images/frames/frame_1.png') }}" alt="">
+            <img class="habit-img" src="{{ url_for('static', filename='images/book_draft.jpg') }}" alt="">
+        </div>
+        <h1 class="habit-text">Читать книжки</h1>
+        <p class="time-text">3 раза в неделю</p>
+    </div>
+
+    <div class="habit-box">
+        <div class="habit-img-wrapper">
+            <img class="habit-img-frame" src="{{ url_for('static', filename='images/frames/frame_1.png') }}" alt="">
+            <img class="habit-img" src="{{ url_for('static', filename='images/book_draft.jpg') }}" alt="">
+        </div>
+        <h1 class="habit-text">Читать книжки</h1>
+        <p class="time-text">3 раза в неделю</p>
+    </div>
+    
+    
+</div>
+{% endblock %}

@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Cozy Habbits{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/habits.css') }}">
+
+</head>
+<body>
+  
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+
+
+<!-- док снизу -->
+<div id="main-menu">
+    <div id="dock">
+
+        <a href="{{ url_for('main.habits') }}">
+            <div class="dock-button">
+                <img src="{{ url_for('static', filename='images/dock/habits_icon.png') }}" alt="">
+                <p>Привычки</p>
+            </div>
+        </a>
+
+        <div class="dock-button">
+            <img src="{{ url_for('static', filename='images/dock/week_icon.png') }}" alt="">
+            <p>Неделя</p>
+        </div>
+        <div class="dock-button">
+            <img src="{{ url_for('static', filename='images/dock/achievements_icon.png') }}" alt="">
+            <p>Награды</p>
+        </div>
+        <div class="dock-button">
+            <img src="{{ url_for('static', filename='images/dock/statistics_icon.png') }}" alt="">
+            <p>Статистика</p>
+        </div>
+        <div class="dock-button">
+            <img src="{{ url_for('static', filename='images/dock/user_icon.png') }}" alt="">
+            <p>Профиль</p>
+        </div>
+
+    </div>
+</div>
+
+</body>
+
+
+</html>

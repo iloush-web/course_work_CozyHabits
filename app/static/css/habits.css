@@ -1,0 +1,45 @@
+#all-habits {
+    margin: auto;
+    padding: 10px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    max-width: 500px;
+}
+
+.habit-box {
+    padding: 10px;
+    position: relative;
+    background-color: rgb(232, 232, 232);
+    border-radius: 10px;
+    /* padding убрать отсюда */
+}
+
+.habit-img-wrapper {
+    position: relative;  /* контейнер для абсолютной рамки */
+}
+
+.habit-img {
+    width: 100%;
+    display: block;
+    border-radius: 10px;
+}
+
+.habit-img-frame {
+    position: absolute;
+    width: 100%;
+    transform: scale(1.18);
+    z-index: 1;
+    /* filter: drop-shadow(0 0 5px black); */
+}
+
+.habit-text {
+    font-size: 18px;
+    padding: 10px 0 0 0;
+}
+
+.time-text {
+    font-size: 14px;
+    padding: 0 0 0 0;
+    /* padding: 8px 12px;  */
+}

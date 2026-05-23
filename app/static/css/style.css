@@ -1,0 +1,62 @@
+:root {
+    --dark-green: #284627;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial;
+    line-height: 1.6;
+}
+
+main {
+    padding: 10px;
+}
+
+#main-menu {
+    z-index: 100;
+    width: 100%;
+    position: fixed;
+    bottom: 20px;
+}
+
+#dock {
+    margin: auto;
+    padding: 0 10px 0 10px;
+    height: 55px;
+    width: max-content;
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+    background-color: rgb(255, 243, 226);
+    /* border: 2px solid var(--dark-green); */
+    border-radius: 20px;
+}
+
+.dock-button {
+    height: 55px;
+    width: 55px;
+    transition: all ease 0.2s;
+}
+
+.dock-button:hover {
+    height: 70px;
+    width: 70px;
+}
+
+.dock-button p {
+    margin-top: -5px;
+    font-size: 10px;
+    text-align: center;
+    color: white;
+    filter: drop-shadow(0 0 3px var(--dark-green)) drop-shadow(0 0 5px var(--dark-green));
+}
+
+.dock-button img {
+    width: 100%;
+}
+
