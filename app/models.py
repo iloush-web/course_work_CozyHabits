@@ -1,11 +1,17 @@
 from datetime import datetime
 
+from flask_login import UserMixin
 from sqlalchemy import JSON
 
-from app.extensions import db, bcrypt
+from app.extensions import db, bcrypt, login_manager
 
 
-class User(db.Model):
+@login_manager.user_loader
+def load_user(user_id: str):
+    return User.query.get(int(user_id))
+
+
+class User(UserMixin, db.Model):
     __tablename__ = 'users'
 
     id = db.Column(db.Integer, primary_key=True)
@@ -47,7 +53,7 @@ class Habit(db.Model):
     category_id = db.Column(db.Integer, db.ForeignKey('categories.id'), nullable=True)
     title = db.Column(db.String(120), nullable=False)
     description = db.Column(db.Text, nullable=True)
-    icon = db.Column(db.String(80), default='star', nullable=False)
+    icon = db.Column(db.String(255), nullable=True)  # path relative to /static, e.g. 'uploads/habits/xyz.jpg'
     frequency = db.Column(db.String(20), nullable=False)  # 'daily' / 'weekly'
     target_days = db.Column(JSON, nullable=True)  # list[int], e.g. [1, 3, 5]
     reminder_time = db.Column(db.Time, nullable=True)

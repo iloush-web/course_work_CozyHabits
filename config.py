@@ -12,3 +12,5 @@ class Config:
         'sqlite:///' + os.path.join(basedir, 'cozyhabits.db')
     )
     SQLALCHEMY_TRACK_MODIFICATIONS = False
+
+    MAX_CONTENT_LENGTH = 5 * 1024 * 1024  # 5 MB

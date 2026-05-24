@@ -9,7 +9,17 @@
 
 </head>
 <body>
-  
+
+    <header id="auth-bar">
+        {% if current_user.is_authenticated %}
+            <span>Привет, {{ current_user.username }}{% if current_user.is_admin %} (admin){% endif %}!</span>
+            <a href="{{ url_for('auth.logout') }}">Выйти</a>
+        {% else %}
+            <a href="{{ url_for('auth.login') }}">Войти</a>
+            <a href="{{ url_for('auth.register') }}">Регистрация</a>
+        {% endif %}
+    </header>
+
     <main>
         {% block content %}{% endblock %}
     </main>

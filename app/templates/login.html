@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+
+{% block title %}Вход{% endblock %}
+
+{% block content %}
+<section class="auth-page">
+    <h1>Вход</h1>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <ul class="flash-list">
+                {% for category, msg in messages %}
+                    <li class="flash flash-{{ category }}">{{ msg }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+    {% endwith %}
+
+    <form method="POST" action="{{ url_for('auth.login') }}" class="auth-form">
+        <label>
+            Email
+            <input type="email" name="email" value="{{ email or '' }}" required>
+        </label>
+
+        <label>
+            Пароль
+            <input type="password" name="password" required>
+        </label>
+
+        <label>
+            <input type="checkbox" name="remember"> Запомнить меня
+        </label>
+
+        <button type="submit">Войти</button>
+    </form>
+
+    <p>Нет аккаунта? <a href="{{ url_for('auth.register') }}">Зарегистрироваться</a></p>
+</section>
+{% endblock %}

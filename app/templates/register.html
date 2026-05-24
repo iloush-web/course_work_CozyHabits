@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+
+{% block title %}Регистрация{% endblock %}
+
+{% block content %}
+<section class="auth-page">
+    <h1>Регистрация</h1>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <ul class="flash-list">
+                {% for category, msg in messages %}
+                    <li class="flash flash-{{ category }}">{{ msg }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+    {% endwith %}
+
+    <form method="POST" action="{{ url_for('auth.register') }}" class="auth-form">
+        <label>
+            Email
+            <input type="email" name="email" value="{{ email or '' }}" required>
+        </label>
+
+        <label>
+            Имя пользователя
+            <input type="text" name="username" value="{{ username or '' }}" required>
+        </label>
+
+        <label>
+            Пароль
+            <input type="password" name="password" required minlength="6">
+        </label>
+
+        <label>
+            Повторите пароль
+            <input type="password" name="password_confirm" required minlength="6">
+        </label>
+
+        <button type="submit">Зарегистрироваться</button>
+    </form>
+
+    <p>Уже есть аккаунт? <a href="{{ url_for('auth.login') }}">Войти</a></p>
+</section>
+{% endblock %}

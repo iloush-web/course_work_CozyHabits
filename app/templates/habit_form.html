@@ -1,0 +1,92 @@
+{% extends 'base.html' %}
+
+{% block title %}{% if mode == 'edit' %}Редактирование привычки{% else %}Новая привычка{% endif %}{% endblock %}
+
+{% set h = habit %}
+{% set target_days = (h.target_days if h else []) or [] %}
+{% set days_labels = [(1,'Пн'),(2,'Вт'),(3,'Ср'),(4,'Чт'),(5,'Пт'),(6,'Сб'),(7,'Вс')] %}
+
+{% block content %}
+<section class="habit-form-page">
+    <h1>{% if mode == 'edit' %}Редактировать привычку{% else %}Новая привычка{% endif %}</h1>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <ul class="flash-list">
+                {% for category, msg in messages %}
+                    <li class="flash flash-{{ category }}">{{ msg }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+    {% endwith %}
+
+    <form method="POST" action="{{ form_action }}" class="habit-form" enctype="multipart/form-data">
+        <label>
+            Название
+            <input type="text" name="title" required maxlength="120"
+                   value="{{ h.title if h else '' }}">
+        </label>
+
+        <label>
+            Описание
+            <textarea name="description" rows="3">{{ h.description if h and h.description else '' }}</textarea>
+        </label>
+
+        <fieldset>
+            <legend>Частота</legend>
+            <label>
+                <input type="radio" name="frequency" value="daily"
+                       {% if not h or h.frequency == 'daily' %}checked{% endif %}>
+                Ежедневно
+            </label>
+            <label>
+                <input type="radio" name="frequency" value="weekly"
+                       {% if h and h.frequency == 'weekly' %}checked{% endif %}>
+                Еженедельно
+            </label>
+        </fieldset>
+
+        <fieldset>
+            <legend>Дни недели (для еженедельной)</legend>
+            {% for num, label in days_labels %}
+                <label>
+                    <input type="checkbox" name="target_days" value="{{ num }}"
+                           {% if num in target_days %}checked{% endif %}>
+                    {{ label }}
+                </label>
+            {% endfor %}
+        </fieldset>
+
+        <label>
+            Напоминание (время)
+            <input type="time" name="reminder_time"
+                   value="{{ h.reminder_time.strftime('%H:%M') if h and h.reminder_time else '' }}">
+        </label>
+
+        <label>
+            Цвет
+            <input type="color" name="color"
+                   value="{{ h.color if h and h.color else '#4CAF50' }}">
+        </label>
+
+        <fieldset>
+            <legend>Иконка</legend>
+            {% if h and h.icon %}
+                <div class="icon-preview">
+                    <p>Текущая:</p>
+                    <img src="{{ url_for('static', filename=h.icon) }}" alt="" style="max-width:80px">
+                </div>
+            {% endif %}
+            <label>
+                {% if h and h.icon %}Заменить картинку{% else %}Загрузить картинку{% endif %}
+                <input type="file" name="icon" accept="image/png,image/jpeg,image/gif,image/webp">
+            </label>
+        </fieldset>
+
+        <button type="submit">
+            {% if mode == 'edit' %}Сохранить{% else %}Создать{% endif %}
+        </button>
+        <a href="{{ url_for('main.habits') }}">Отмена</a>
+    </form>
+</section>
+{% endblock %}

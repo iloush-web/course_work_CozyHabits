@@ -5,53 +5,52 @@
 {% block content %}
 <h1>COZY HABITS</h1>
 <p>Привычки</p>
+
+{% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+        <ul class="flash-list">
+            {% for category, msg in messages %}
+                <li class="flash flash-{{ category }}">{{ msg }}</li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+{% endwith %}
+
+<a href="{{ url_for('main.habit_new') }}" class="habit-new-btn">+ Создать привычку</a>
+
 <div id="all-habits">
 
+    {% for habit in habits %}
     <div class="habit-box">
         <div class="habit-img-wrapper">
             <img class="habit-img-frame" src="{{ url_for('static', filename='images/frames/frame_1.png') }}" alt="">
-            <img class="habit-img" src="{{ url_for('static', filename='images/book_draft.jpg') }}" alt="">
+            <img class="habit-img"
+                 src="{{ url_for('static', filename=habit.icon) if habit.icon else url_for('static', filename='images/book_draft.jpg') }}"
+                 alt="">
         </div>
-        <h1 class="habit-text">Читать книжки</h1>
-        <p class="time-text">3 раза в неделю</p>
-    </div>
+        <h1 class="habit-text">{{ habit.title }}</h1>
+        <p class="time-text">
+            {% if habit.frequency == 'daily' %}
+                Каждый день
+            {% elif habit.target_days %}
+                {{ habit.target_days|length }} раз в неделю
+            {% else %}
+                Раз в неделю
+            {% endif %}
+        </p>
 
-    <div class="habit-box">
-        <div class="habit-img-wrapper">
-            <img class="habit-img-frame" src="{{ url_for('static', filename='images/frames/frame_1.png') }}" alt="">
-            <img class="habit-img" src="{{ url_for('static', filename='images/book_draft.jpg') }}" alt="">
+        <div class="habit-actions">
+            <a href="{{ url_for('main.habit_edit', habit_id=habit.id) }}">Изменить</a>
+            <form method="POST" action="{{ url_for('main.habit_delete', habit_id=habit.id) }}"
+                  onsubmit="return confirm('Удалить привычку «{{ habit.title }}»?');"
+                  style="display:inline">
+                <button type="submit">Удалить</button>
+            </form>
         </div>
-        <h1 class="habit-text">Читать книжки</h1>
-        <p class="time-text">3 раза в неделю</p>
     </div>
+    {% else %}
+    <p class="empty-state">Пока нет привычек. Создай первую!</p>
+    {% endfor %}
 
-    <div class="habit-box">
-        <div class="habit-img-wrapper">
-            <img class="habit-img-frame" src="{{ url_for('static', filename='images/frames/frame_1.png') }}" alt="">
-            <img class="habit-img" src="{{ url_for('static', filename='images/book_draft.jpg') }}" alt="">
-        </div>
-        <h1 class="habit-text">Читать книжки</h1>
-        <p class="time-text">3 раза в неделю</p>
-    </div>
-
-    <div class="habit-box">
-        <div class="habit-img-wrapper">
-            <img class="habit-img-frame" src="{{ url_for('static', filename='images/frames/frame_1.png') }}" alt="">
-            <img class="habit-img" src="{{ url_for('static', filename='images/book_draft.jpg') }}" alt="">
-        </div>
-        <h1 class="habit-text">Читать книжки</h1>
-        <p class="time-text">3 раза в неделю</p>
-    </div>
-
-    <div class="habit-box">
-        <div class="habit-img-wrapper">
-            <img class="habit-img-frame" src="{{ url_for('static', filename='images/frames/frame_1.png') }}" alt="">
-            <img class="habit-img" src="{{ url_for('static', filename='images/book_draft.jpg') }}" alt="">
-        </div>
-        <h1 class="habit-text">Читать книжки</h1>
-        <p class="time-text">3 раза в неделю</p>
-    </div>
-    
-    
 </div>
 {% endblock %}
