@@ -8,7 +8,11 @@ from app.models import User
 
 auth = Blueprint('auth', __name__)
 
-EMAIL_RE = re.compile(r'^[^@\s]+@[^@\s]+\.[^@\s]+$')
+EMAIL_RE = re.compile(r'^[A-Za-z0-9._%+\-]+@[A-Za-z0-9.\-]+\.[A-Za-z]{2,}$')
+
+
+def is_valid_email(email: str) -> bool:
+    return bool(EMAIL_RE.match(email)) and len(email) <= 254
 
 
 @auth.route('/register', methods=['GET', 'POST'])
@@ -23,8 +27,8 @@ def register():
         password_confirm = request.form.get('password_confirm') or ''
 
         errors = []
-        if not EMAIL_RE.match(email):
-            errors.append('Введите корректный email.')
+        if not is_valid_email(email):
+            errors.append('Введите корректный email (например, name@example.ru).')
         if not username:
             errors.append('Имя пользователя обязательно.')
         if len(password) < 6:
@@ -60,6 +64,10 @@ def login():
         email = (request.form.get('email') or '').strip().lower()
         password = request.form.get('password') or ''
         remember = bool(request.form.get('remember'))
+
+        if not is_valid_email(email):
+            flash('Введите корректный email (например, name@example.ru).', 'error')
+            return render_template('login.html', email=email)
 
         user = User.query.filter_by(email=email).first()
         if user is None or not user.check_password(password):
