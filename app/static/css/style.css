@@ -1,6 +1,10 @@
 :root {
     --dark-green: #284627;
+    --dark-green-transp: #28462783;
     --light-beige: rgb(255, 243, 226);
+
+    --dock-height: 75px;   /* высота дока (55px) + воздух вокруг */
+    --btn-font-size: 1rem; /* единый размер текста кнопок */
 }
 
 @font-face {
@@ -34,8 +38,20 @@ p {
     font-weight: 500;
 }
 
+a {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--dark-green);
+    
+    text-decoration-line: underline;
+    text-decoration-style: dashed;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 2px;
+}
+
 h1 {
     font-family: "Raleway-Italic";
+    color: var(--dark-green);
     font-size: 1.8rem;
     font-weight: 700;
 }
@@ -53,6 +69,7 @@ h3 {
 
 main {
     padding: 10px;
+    padding-bottom: calc(var(--dock-height) + 20px);
 }
 
 #main-menu {
@@ -71,7 +88,7 @@ main {
     justify-content: center;
     align-items: flex-end;
     background-color: var(--light-beige);
-    /* border: 2px solid var(--dark-green); */
+    border: 1px solid var(--dark-green);
     border-radius: 20px;
 }
 
@@ -93,6 +110,12 @@ main {
     color: white;
     filter: drop-shadow(0 0 3px var(--dark-green)) drop-shadow(0 0 5px var(--dark-green));
 }
+
+#dock a {
+    text-decoration: none;
+}
+
+
 
 .dock-button img {
     width: 100%;

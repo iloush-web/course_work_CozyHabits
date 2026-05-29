@@ -43,3 +43,224 @@
     padding: 0 0 0 0;
     /* padding: 8px 12px;  */
 }
+
+/* Форма создания/редактирования привычки */
+
+.habit-form-page {
+    padding-top: 30px;
+    margin: auto;
+    width: 90%;
+}
+
+.habit-form-page h1 {
+    color: var(--dark-green);
+    margin-bottom: 20px;
+}
+
+.habit-form {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    border: 3px solid var(--dark-green);
+    border-radius: 10px;
+    padding: 5%;
+    background-color: var(--light-beige);
+}
+
+.habit-form label {
+    display: block;
+    margin: 0;
+}
+
+/* Текстовые поля, textarea, time */
+.habit-form input[type="text"],
+.habit-form input[type="time"],
+.habit-form textarea {
+    width: 100%;
+    font-family: "Raleway";
+    font-size: 16px;
+    padding: 6px;
+    border: 1px solid var(--dark-green);
+    border-radius: 5px;
+    background-color: white;
+    margin-top: 4px;
+    outline: none;
+}
+
+.habit-form input[type="text"]:focus-visible,
+.habit-form input[type="time"]:focus-visible,
+.habit-form textarea:focus-visible {
+    outline: 2px solid #8eb67b;
+}
+
+.habit-form textarea {
+    resize: vertical;
+    min-height: 70px;
+}
+
+/* Fieldset: частота, дни недели, иконка */
+.habit-form fieldset {
+    border: 1px solid var(--dark-green);
+    border-radius: 6px;
+    padding: 10px 12px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px 14px;
+}
+
+.habit-form fieldset legend {
+    padding: 0 6px;
+    color: var(--dark-green);
+    font-weight: 600;
+}
+
+.habit-form fieldset label {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    margin: 0;
+}
+
+/* Чекбоксы и радио — переопределяем общий input-стиль из reg_auth.css */
+.habit-form input[type="radio"],
+.habit-form input[type="checkbox"] {
+    padding: 0;
+    margin: 0;
+    border: 1px solid var(--dark-green);
+    border-radius: 3px;
+    accent-color: var(--dark-green);
+    cursor: pointer;
+}
+
+/* Цвет */
+.habit-form input[type="color"] {
+    padding: 0;
+    width: 50px;
+    height: 36px;
+    border: 1px solid var(--dark-green);
+    border-radius: 5px;
+    background-color: white;
+    cursor: pointer;
+    margin-top: 4px;
+}
+
+/* Лейбл, оборачивающий file-инпут — на всю ширину fieldset */
+.habit-form fieldset label:has(> input[type="file"]) {
+    display: block;
+    width: 100%;
+}
+
+/* Файл */
+.habit-form input[type="file"] {
+    width: 100%;
+    padding: 4px;
+    margin-top: 4px;
+    background-color: white;
+    color: #555;
+    font-size: 14px;
+    border: 1px solid var(--dark-green);
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+/* Кнопка внутри file-инпута */
+.habit-form input[type="file"]::file-selector-button {
+    font-family: "Raleway";
+    font-size: var(--btn-font-size);
+    padding: 6px 14px;
+    margin-right: 10px;
+    background-color: var(--dark-green);
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.habit-form input[type="file"]::file-selector-button:hover {
+    background-color: #1f3a1f;
+}
+
+/* Превью текущей иконки */
+.icon-preview {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+}
+
+.icon-preview p {
+    margin: 0;
+}
+
+.icon-preview img {
+    border: 1px solid var(--dark-green);
+    border-radius: 6px;
+}
+
+/* Кнопка submit + ссылка "Отмена" */
+.habit-form button[type="submit"] {
+    font-family: "Raleway-Italic";
+    font-size: var(--btn-font-size);
+    margin-top: 5%;
+    padding: 3% 6%;
+    width: min-content;
+    background-color: var(--dark-green);
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    align-self: flex-start;
+    white-space: nowrap;
+}
+
+.habit-form button[type="submit"]:active {
+    outline: 2px solid #8eb67b;
+}
+
+.habit-form > a {
+    color: var(--dark-green);
+    width: max-content;
+}
+
+/* Кнопка удаления привычки на странице редактирования */
+.habit-delete-form {
+    margin-top: 30px;
+    display: flex;
+    justify-content: center;
+}
+
+.habit-delete-btn {
+    font-family: "Raleway-Italic";
+    font-size: var(--btn-font-size);
+    padding: 10px 20px;
+    background-color: #b53d3d;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.habit-delete-btn:hover {
+    background-color: #8f2f2f;
+}
+
+.habit-delete-btn:active {
+    outline: 2px solid #d18585;
+}
+
+/* Кнопка "+ Создать привычку" над списком */
+.habit-new-btn {
+    display: inline-block;
+    font-family: "Raleway-Italic";
+    font-size: var(--btn-font-size);
+    margin: 10px 0;
+    padding: 4px 8px;
+    background-color: var(--dark-green);
+    color: white;
+    text-decoration: none;
+    border-radius: 5px;
+}
+
+.habit-new-btn:active {
+    outline: 2px solid #8eb67b;
+}

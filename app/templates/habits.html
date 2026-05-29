@@ -16,7 +16,7 @@
     {% endif %}
 {% endwith %}
 
-<a href="{{ url_for('main.habit_new') }}" class="habit-new-btn">+ Создать привычку</a>
+<a href="{{ url_for('main.habit_new') }}" class="habit-new-btn">+ Создать</a>
 
 <div id="all-habits">
 
@@ -41,11 +41,6 @@
 
         <div class="habit-actions">
             <a href="{{ url_for('main.habit_edit', habit_id=habit.id) }}">Изменить</a>
-            <form method="POST" action="{{ url_for('main.habit_delete', habit_id=habit.id) }}"
-                  onsubmit="return confirm('Удалить привычку «{{ habit.title }}»?');"
-                  style="display:inline">
-                <button type="submit">Удалить</button>
-            </form>
         </div>
     </div>
     {% else %}

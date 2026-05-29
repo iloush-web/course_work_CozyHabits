@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, date, timedelta
 
 from flask import Blueprint, abort, flash, redirect, render_template, request, url_for
 from flask_login import current_user, login_required
@@ -11,6 +11,23 @@ main = Blueprint('main', __name__)
 
 VALID_FREQUENCIES = ('daily', 'weekly')
 VALID_DAYS = (1, 2, 3, 4, 5, 6, 7)  # 1=Пн ... 7=Вс
+
+DAY_NAMES = ('Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс')
+MONTHS_GEN = (
+    'января', 'февраля', 'марта', 'апреля', 'мая', 'июня',
+    'июля', 'августа', 'сентября', 'октября', 'ноября', 'декабря',
+)
+
+
+def _habit_scheduled_on(habit, day: date, iso_dow: int) -> bool:
+    """Запланирована ли привычка на конкретный день."""
+    if day < habit.created_at.date():
+        return False
+    if habit.frequency == 'daily':
+        return True
+    if habit.frequency == 'weekly' and habit.target_days:
+        return iso_dow in habit.target_days
+    return False
 
 
 def _parse_form(form):
@@ -72,6 +89,40 @@ def _get_own_habit_or_404(habit_id: int) -> Habit:
 def habits():
     user_habits = Habit.query.filter_by(user_id=current_user.id, is_active=True).order_by(Habit.created_at.desc()).all()
     return render_template('habits.html', habits=user_habits)
+
+
+@main.route('/week')
+@login_required
+def week():
+    offset = request.args.get('offset', 0, type=int)
+
+    today = date.today()
+    monday = today - timedelta(days=today.weekday()) + timedelta(weeks=offset)
+    sunday = monday + timedelta(days=6)
+
+    user_habits = Habit.query.filter_by(user_id=current_user.id, is_active=True).all()
+
+    days = []
+    for i in range(7):
+        d = monday + timedelta(days=i)
+        iso_dow = i + 1  # 1=Пн ... 7=Вс
+        day_habits = [h for h in user_habits if _habit_scheduled_on(h, d, iso_dow)]
+        days.append({
+            'date': d,
+            'name': DAY_NAMES[i],
+            'day_num': d.day,
+            'is_today': d == today,
+            'habits': day_habits,
+        })
+
+    week_label = f'{monday.day} {MONTHS_GEN[monday.month - 1]} — {sunday.day} {MONTHS_GEN[sunday.month - 1]}'
+
+    return render_template(
+        'week.html',
+        days=days,
+        offset=offset,
+        week_label=week_label,
+    )
 
 
 @main.route('/habits/new', methods=['GET', 'POST'])

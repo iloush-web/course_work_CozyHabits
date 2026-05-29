@@ -88,5 +88,13 @@
         </button>
         <a href="{{ url_for('main.habits') }}">Отмена</a>
     </form>
+
+    {% if mode == 'edit' and h and h.id %}
+        <form method="POST" action="{{ url_for('main.habit_delete', habit_id=h.id) }}"
+              class="habit-delete-form"
+              onsubmit="return confirm('Удалить привычку «{{ h.title }}»? Действие необратимо.');">
+            <button type="submit" class="habit-delete-btn">Удалить привычку</button>
+        </form>
+    {% endif %}
 </section>
 {% endblock %}

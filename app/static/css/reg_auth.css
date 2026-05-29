@@ -9,11 +9,24 @@
 
 label {
     margin-bottom: 10px;
+}   
+
+input {
+    outline: none;
+    padding: 6px;
+    border: 1px solid var(--dark-green);
+    border-radius: 5px;
+}
+
+input:focus-visible {
+    outline: 2px solid #8eb67b;
 }
 
 .text-field {
+    font-size: 16px;
     width: 100%;
 }
+
 
 .auth-page {
     padding-top: 100px;
@@ -32,6 +45,7 @@ label {
 
 .form-button {
     font-family: "Raleway-Italic";
+    font-size: var(--btn-font-size);
     margin-top: 5%;
     padding: 3%;
     width: min-content;
@@ -39,4 +53,10 @@ label {
     color: white;
     border: none;
     border-radius: 5px;
+
+}
+
+.form-button:active {
+    outline: 2px solid #8eb67b;
+    
 }
