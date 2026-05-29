@@ -18,28 +18,29 @@
 
     <form method="POST" action="{{ url_for('auth.register') }}" class="auth-form">
         <label>
-            Email
-            <input type="email" name="email" value="{{ email or '' }}" required>
+            Email <br>
+            <input class="text-field" type="email" name="email" value="{{ email or '' }}" required>
         </label>
 
         <label>
-            Имя пользователя
-            <input type="text" name="username" value="{{ username or '' }}" required>
+            Имя пользователя <br>
+            <input class="text-field" type="text" name="username" value="{{ username or '' }}" required>
         </label>
 
         <label>
-            Пароль
-            <input type="password" name="password" required minlength="6">
+            Пароль <br>
+            <input class="text-field" type="password" name="password" required minlength="6">
         </label>
 
         <label>
-            Повторите пароль
-            <input type="password" name="password_confirm" required minlength="6">
+            Повторите пароль <br>
+            <input class="text-field" type="password" name="password_confirm" required minlength="6">
         </label>
 
-        <button type="submit">Зарегистрироваться</button>
+        <button class="form-button" type="submit">Зарегистрироваться</button>
     </form>
 
+    <br><br>
     <p>Уже есть аккаунт? <a href="{{ url_for('auth.login') }}">Войти</a></p>
 </section>
 {% endblock %}

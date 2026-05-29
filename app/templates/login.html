@@ -4,7 +4,7 @@
 
 {% block content %}
 <section class="auth-page">
-    <h1>Вход</h1>
+    <h1>Войти в аккаунт</h1>
 
     {% with messages = get_flashed_messages(with_categories=true) %}
         {% if messages %}
@@ -18,22 +18,23 @@
 
     <form method="POST" action="{{ url_for('auth.login') }}" class="auth-form">
         <label>
-            Email
-            <input type="email" name="email" value="{{ email or '' }}" required>
+            Email <br>
+            <input class="text-field" type="email" name="email" value="{{ email or '' }}" required>
         </label>
 
         <label>
-            Пароль
-            <input type="password" name="password" required>
+            Пароль <br>
+            <input class="text-field" type="password" name="password" required>
         </label>
 
         <label>
-            <input type="checkbox" name="remember"> Запомнить меня
+            <input class="remember-me" type="checkbox" name="remember"> Запомнить меня
         </label>
 
-        <button type="submit">Войти</button>
+        <button class="form-button" type="submit">Войти</button>
     </form>
 
+    <br><br>
     <p>Нет аккаунта? <a href="{{ url_for('auth.register') }}">Зарегистрироваться</a></p>
 </section>
 {% endblock %}

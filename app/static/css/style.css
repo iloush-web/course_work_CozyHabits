@@ -1,5 +1,20 @@
 :root {
     --dark-green: #284627;
+    --light-beige: rgb(255, 243, 226);
+}
+
+@font-face {
+    font-family: "Raleway";
+    src: url("../fonts/Raleway/Raleway-VariableFont_wght.ttf") format("truetype");
+    font-weight: 500;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: "Raleway-Italic";
+    src: url("../fonts/Raleway/Raleway-Italic-VariableFont_wght.ttf") format("truetype");
+    font-weight: 500;
+    font-style: normal;
 }
 
 * {
@@ -9,9 +24,32 @@
 }
 
 body {
-    font-family: Arial;
-    line-height: 1.6;
+    font-family: "Raleway";
+    line-height: 1.4;
+    font-size: 18px;
 }
+
+p {
+    font-size: 1rem;
+    font-weight: 500;
+}
+
+h1 {
+    font-family: "Raleway-Italic";
+    font-size: 1.8rem;
+    font-weight: 700;
+}
+
+h2 {
+    font-size: 1.5rem;
+    font-weight: 600;
+}
+
+h3 {
+    font-size: 1.2rem;
+    font-weight: 600;
+}
+
 
 main {
     padding: 10px;
@@ -32,7 +70,7 @@ main {
     display: flex;
     justify-content: center;
     align-items: flex-end;
-    background-color: rgb(255, 243, 226);
+    background-color: var(--light-beige);
     /* border: 2px solid var(--dark-green); */
     border-radius: 20px;
 }

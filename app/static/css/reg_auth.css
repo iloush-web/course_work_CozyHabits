@@ -1,0 +1,42 @@
+.auth-form {
+    display: flex;
+    flex-direction: column;
+    border: 3px solid var(--dark-green);
+    border-radius: 10px;
+    padding: 5%;
+    background-color: var(--light-beige);
+}
+
+label {
+    margin-bottom: 10px;
+}
+
+.text-field {
+    width: 100%;
+}
+
+.auth-page {
+    padding-top: 100px;
+    height: 100%;
+    margin: auto;
+    width: 70%;
+}
+
+.auth-page h1 {
+    color: var(--dark-green);
+}
+
+.remember-me {
+    margin-top: 10%;
+}
+
+.form-button {
+    font-family: "Raleway-Italic";
+    margin-top: 5%;
+    padding: 3%;
+    width: min-content;
+    background-color: var(--dark-green);
+    color: white;
+    border: none;
+    border-radius: 5px;
+}
