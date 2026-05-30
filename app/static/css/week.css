@@ -1,0 +1,21 @@
+.week-nav {
+    width: max-content;
+    margin: 30px auto 20px auto;
+    padding: 5px 15px;
+    background-color: var(--light-beige);
+    border-radius: 10px;
+    border: 2px solid var(--dark-green);
+}
+
+.week-day {
+    padding: 10px;
+    background-color: var(--light-beige);
+    border-radius: 10px;
+    border: 2px solid var(--dark-green);
+    margin-bottom: 20px;
+}
+
+.week-day.is-today {
+    background-color: var(--light-beige);
+    border: 2px solid var(--dark-green);
+}

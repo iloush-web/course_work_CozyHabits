@@ -2,11 +2,13 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="theme-color" content="#fff3e2">
     <title>{% block title %}Cozy Habbits{% endblock %}</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/habits.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/reg_auth.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/week.css') }}">
 
 </head>
 <body>
@@ -39,10 +41,12 @@
             </div>
         </a>
 
-        <div class="dock-button">
-            <img src="{{ url_for('static', filename='images/dock/week_icon.png') }}" alt="">
-            <p>Неделя</p>
-        </div>
+        <a href="{{ url_for('main.week') }}">
+            <div class="dock-button">
+                <img src="{{ url_for('static', filename='images/dock/week_icon.png') }}" alt="">
+                <p>Неделя</p>
+            </div>
+        </a>
         <div class="dock-button">
             <img src="{{ url_for('static', filename='images/dock/achievements_icon.png') }}" alt="">
             <p>Награды</p>

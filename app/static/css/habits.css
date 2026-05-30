@@ -10,8 +10,9 @@
 .habit-box {
     padding: 10px;
     position: relative;
-    background-color: rgb(232, 232, 232);
+    background-color: var(--light-beige);
     border-radius: 10px;
+    border: 2px solid var(--dark-green);
     /* padding убрать отсюда */
 }
 

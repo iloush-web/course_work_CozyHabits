@@ -4,6 +4,8 @@
 
 {% block content %}
 <section class="auth-page">
+    <img class="cozyhabits-logo" src="{{ url_for('static', filename='images/cozyhabits_text.gif') }}" alt="">
+
     <h1>Регистрация</h1>
 
     {% with messages = get_flashed_messages(with_categories=true) %}

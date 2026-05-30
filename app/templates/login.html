@@ -3,7 +3,10 @@
 {% block title %}Вход{% endblock %}
 
 {% block content %}
+
 <section class="auth-page">
+    <img class="cozyhabits-logo" src="{{ url_for('static', filename='images/cozyhabits_text.gif') }}" alt="">
+    <br><br>
     <h1>Войти в аккаунт</h1>
 
     {% with messages = get_flashed_messages(with_categories=true) %}

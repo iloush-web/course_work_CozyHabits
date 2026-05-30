@@ -12,7 +12,7 @@ main = Blueprint('main', __name__)
 VALID_FREQUENCIES = ('daily', 'weekly')
 VALID_DAYS = (1, 2, 3, 4, 5, 6, 7)  # 1=Пн ... 7=Вс
 
-DAY_NAMES = ('Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс')
+DAY_NAMES = ('Понедельник', 'Вторник', 'Среда', 'Четверг', 'Пятница', 'Суббота', 'Воскресенье')
 MONTHS_GEN = (
     'января', 'февраля', 'марта', 'апреля', 'мая', 'июня',
     'июля', 'августа', 'сентября', 'октября', 'ноября', 'декабря',
@@ -100,28 +100,35 @@ def week():
     monday = today - timedelta(days=today.weekday()) + timedelta(weeks=offset)
     sunday = monday + timedelta(days=6)
 
+    # какой день недели выбран (0=Пн ... 6=Вс)
+    default_sel = today.weekday() if monday <= today <= sunday else 0
+    sel = request.args.get('day', default_sel, type=int)
+    if sel < 0 or sel > 6:
+        sel = default_sel
+
     user_habits = Habit.query.filter_by(user_id=current_user.id, is_active=True).all()
 
+    # данные по всем 7 дням (привычки рендерятся сразу, переключение — на JS)
     days = []
     for i in range(7):
         d = monday + timedelta(days=i)
         iso_dow = i + 1  # 1=Пн ... 7=Вс
-        day_habits = [h for h in user_habits if _habit_scheduled_on(h, d, iso_dow)]
         days.append({
+            'index': i,
             'date': d,
             'name': DAY_NAMES[i],
             'day_num': d.day,
+            'label': f'{d.day} {MONTHS_GEN[d.month - 1].capitalize()}',
             'is_today': d == today,
-            'habits': day_habits,
+            'is_selected': i == sel,
+            'habits': [h for h in user_habits if _habit_scheduled_on(h, d, iso_dow)],
         })
-
-    week_label = f'{monday.day} {MONTHS_GEN[monday.month - 1]} — {sunday.day} {MONTHS_GEN[sunday.month - 1]}'
 
     return render_template(
         'week.html',
         days=days,
         offset=offset,
-        week_label=week_label,
+        selected_index=sel,
     )
 
 
