@@ -36,12 +36,26 @@ services:
       - web
     ports:
       - "80:80"
+      - "443:443"
     volumes:
       - ./nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
       # та же статика и загрузки, что у web — nginx отдаёт их напрямую
       - ./app/static:/app/static:ro
       - uploads:/app/static/uploads:ro
+      # сертификаты и webroot для ACME-проверки
+      - certbot_certs:/etc/letsencrypt:ro
+      - certbot_www:/var/www/certbot:ro
+
+  certbot:
+    image: certbot/certbot:latest
+    # profiles -> не стартует в обычном `up`, вызывается только через `docker compose run`
+    profiles: ["tools"]
+    volumes:
+      - certbot_certs:/etc/letsencrypt
+      - certbot_www:/var/www/certbot
 
 volumes:
   pg_data:
   uploads:
+  certbot_certs:
+  certbot_www:
