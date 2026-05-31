@@ -13,11 +13,13 @@ main = Blueprint('main', __name__)
 VALID_FREQUENCIES = ('daily', 'weekly')
 VALID_DAYS = (1, 2, 3, 4, 5, 6, 7)  # 1=Пн ... 7=Вс
 
-DAY_NAMES = ('Понедельник', 'Вторник', 'Среда', 'Четверг', 'Пятница', 'Суббота', 'Воскресенье')
+DAY_NAMES = ('Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс')
+
 MONTHS_GEN = (
     'января', 'февраля', 'марта', 'апреля', 'мая', 'июня',
     'июля', 'августа', 'сентября', 'октября', 'ноября', 'декабря',
 )
+
 MONTHS_NOM = (
     'Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь',
     'Июль', 'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь',
@@ -113,20 +115,40 @@ def week():
 
     user_habits = Habit.query.filter_by(user_id=current_user.id, is_active=True).all()
 
+    # выполненные привычки за показанную неделю: {(habit_id, date)}
+    week_logs = HabitLog.query.filter(
+        HabitLog.user_id == current_user.id,
+        HabitLog.is_done.is_(True),
+        HabitLog.log_date >= monday,
+        HabitLog.log_date <= sunday,
+    ).all()
+    done_set = {(log.habit_id, log.log_date) for log in week_logs}
+
     # данные по всем 7 дням (привычки рендерятся сразу, переключение — на JS)
     days = []
     for i in range(7):
         d = monday + timedelta(days=i)
         iso_dow = i + 1  # 1=Пн ... 7=Вс
+
+        scheduled = [h for h in user_habits if _habit_scheduled_on(h, d, iso_dow)]
+        # сортировка по времени напоминания (утро -> вечер), без времени — в конец
+        scheduled.sort(key=lambda h: (h.reminder_time is None, h.reminder_time))
+
+        pending, done = [], []
+        for h in scheduled:
+            (done if (h.id, d) in done_set else pending).append(h)
+
         days.append({
             'index': i,
             'date': d,
+            'date_iso': d.isoformat(),
             'name': DAY_NAMES[i],
             'day_num': d.day,
             'label': f'{d.day} {MONTHS_GEN[d.month - 1].capitalize()}',
             'is_today': d == today,
             'is_selected': i == sel,
-            'habits': [h for h in user_habits if _habit_scheduled_on(h, d, iso_dow)],
+            'pending': pending,
+            'done': done,
         })
 
     return render_template(
@@ -137,15 +159,47 @@ def week():
     )
 
 
+@main.route('/habits/<int:habit_id>/toggle', methods=['POST'])
+@login_required
+def habit_toggle(habit_id):
+    habit = _get_own_habit_or_404(habit_id)
+
+    try:
+        log_date = datetime.strptime(request.form.get('log_date', ''), '%Y-%m-%d').date()
+    except ValueError:
+        abort(400)
+
+    log = HabitLog.query.filter_by(
+        habit_id=habit.id, user_id=current_user.id, log_date=log_date
+    ).first()
+
+    if log:
+        db.session.delete(log)  # снять отметку
+    else:
+        db.session.add(HabitLog(
+            habit_id=habit.id, user_id=current_user.id,
+            log_date=log_date, is_done=True,
+        ))
+    db.session.commit()
+
+    # вернуться на ту же неделю и день
+    offset = request.form.get('offset', 0, type=int)
+    day = request.form.get('day', 0, type=int)
+    return redirect(url_for('main.week', offset=offset, day=day))
+
+
 @main.route('/profile')
 @login_required
 def profile():
-    achievements = sorted(
-        current_user.achievements,
-        key=lambda a: a.unlocked_at,
+    # награды юзера: за опыт + недельные, новые сверху
+    earned = sorted(
+        list(current_user.user_rewards) + list(current_user.user_weekly_rewards),
+        key=lambda r: r.obtained_at,
         reverse=True,
     )
-    return render_template('profile.html', user=current_user, achievements=achievements)
+    # у UserReward есть .reward, у UserWeeklyReward — .weekly_reward; оба с title/icon_url
+    rewards = [r.reward if hasattr(r, 'reward') else r.weekly_reward for r in earned]
+    return render_template('profile.html', user=current_user, achievements=rewards)
 
 
 @main.route('/statistics')

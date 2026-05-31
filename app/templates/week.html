@@ -2,26 +2,43 @@
 
 {% block title %}Неделя{% endblock %}
 
+{# Строка привычки с чекбоксом отметки выполнения #}
+{% macro habit_row(habit, done, day, offset) %}
+<form class="week-toggle-form" method="POST"
+      action="{{ url_for('main.habit_toggle', habit_id=habit.id) }}">
+    <input type="hidden" name="log_date" value="{{ day.date_iso }}">
+    <input type="hidden" name="offset" value="{{ offset }}">
+    <input type="hidden" name="day" value="{{ day.index }}">
+    <label class="week-habit {% if done %}is-done{% endif %}">
+        <input class="week-habit-check" type="checkbox"
+               {% if done %}checked{% endif %} onchange="this.form.submit()">
+        <span class="week-habit-title">{{ habit.title }}</span>
+        {% if habit.reminder_time %}
+        <span class="week-habit-time">{{ habit.reminder_time.strftime('%H:%M') }}</span>
+        {% endif %}
+    </label>
+</form>
+{% endmacro %}
+
 {% block content %}
 <section class="week-page">
 
     <!-- Полоска дней недели -->
     <div class="week-strip">
+        <a class="week-arrow week-arrow-prev" href="{{ url_for('main.week', offset=offset - 1) }}">‹---</a>
+
         {% for day in days %}
         <a class="week-day-btn {% if day.is_selected %}is-selected{% endif %} {% if day.is_today %}is-today{% endif %}"
            data-day="{{ day.index }}"
            data-label="{{ day.label }}"
            href="{{ url_for('main.week', offset=offset, day=day.index) }}">
-            <span class="week-day-btn-name">{{ day.name }}</span>
-            <span class="week-day-btn-num">{{ day.day_num }}</span>
+            <div class="week-day-btn-name">{{ day.name }}</div>
+            <div class="week-day-btn-num">{{ day.day_num }}</div>
         </a>
         {% endfor %}
-    </div>
 
-    <!-- Листание недель (перезагрузка страницы) -->
-    <div class="week-arrows">
-        <a class="week-arrow week-arrow-prev" href="{{ url_for('main.week', offset=offset - 1) }}">‹</a>
-        <a class="week-arrow week-arrow-next" href="{{ url_for('main.week', offset=offset + 1) }}">›</a>
+        <a class="week-arrow week-arrow-next" href="{{ url_for('main.week', offset=offset + 1) }}">---›</a>
+
     </div>
 
     <!-- Выбранная дата -->
@@ -29,27 +46,31 @@
         {% for day in days if day.is_selected %}{{ day.label }}{% endfor %}
     </h1>
 
-    <!-- Привычки: панель на каждый день, видна только выбранная -->
+    <!-- Панель на каждый день, видна только выбранная -->
     {% for day in days %}
     <div class="week-day-panel" data-day="{{ day.index }}" {% if not day.is_selected %}hidden{% endif %}>
+
+        <!-- Запланированные (ожидают), отсортированы по времени напоминания -->
         <div class="week-habits">
-            {% for habit in day.habits %}
-            <a class="week-habit" href="{{ url_for('main.habit_edit', habit_id=habit.id) }}">
-                <span class="week-habit-title">{{ habit.title }}</span>
-                <span class="week-habit-freq">
-                    {% if habit.frequency == 'daily' %}
-                        Каждый день
-                    {% elif habit.target_days %}
-                        {{ habit.target_days|length }} раз в неделю
-                    {% else %}
-                        Раз в неделю
-                    {% endif %}
-                </span>
-            </a>
+            {% for habit in day.pending %}
+                {{ habit_row(habit, false, day, offset) }}
             {% else %}
-            <p class="week-empty">На этот день привычек нет</p>
+                {% if not day.done %}
+                <p class="week-empty">На этот день привычек нет</p>
+                {% endif %}
             {% endfor %}
         </div>
+
+        <!-- Выполнено -->
+        {% if day.done %}
+        <div class="week-done">
+            <h2 class="week-done-title">Выполнено</h2>
+            {% for habit in day.done %}
+                {{ habit_row(habit, true, day, offset) }}
+            {% endfor %}
+        </div>
+        {% endif %}
+
     </div>
     {% endfor %}
 
