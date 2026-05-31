@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+
+{% block title %}Статистика{% endblock %}
+
+{% block content %}
+<section class="stats-page">
+
+    <h1 class="stats-title">{{ month_label }}</h1>
+
+    <div class="stats-calendar">
+        <!-- Шапка дней недели -->
+        <div class="stats-week stats-week-head">
+            {% for name in day_names %}
+            <span class="stats-dow">{{ name }}</span>
+            {% endfor %}
+        </div>
+
+        <!-- Недели месяца -->
+        {% for week in weeks %}
+        <div class="stats-week">
+            {% for cell in week %}
+            <span class="stats-cell">
+                {% if cell.day %}
+                <span class="stats-day
+                             {% if cell.status == 'all' %}is-all{% elif cell.status == 'some' %}is-some{% endif %}
+                             {% if cell.is_today %}is-today{% endif %}">
+                    {{ cell.day }}
+                </span>
+                {% endif %}
+            </span>
+            {% endfor %}
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- Листание месяцев (перезагрузка страницы) -->
+    <div class="stats-arrows">
+        <a class="stats-arrow stats-arrow-prev" href="{{ url_for('main.statistics', offset=offset - 1) }}">‹</a>
+        <a class="stats-arrow stats-arrow-next" href="{{ url_for('main.statistics', offset=offset + 1) }}">›</a>
+    </div>
+
+</section>
+{% endblock %}

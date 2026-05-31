@@ -1,10 +1,11 @@
+import calendar
 from datetime import datetime, date, timedelta
 
 from flask import Blueprint, abort, flash, redirect, render_template, request, url_for
 from flask_login import current_user, login_required
 
 from app.extensions import db
-from app.models import Habit
+from app.models import Habit, HabitLog
 from app.uploads import save_habit_icon, delete_habit_icon, is_allowed_image
 
 main = Blueprint('main', __name__)
@@ -16,6 +17,10 @@ DAY_NAMES = ('Понедельник', 'Вторник', 'Среда', 'Четв
 MONTHS_GEN = (
     'января', 'февраля', 'марта', 'апреля', 'мая', 'июня',
     'июля', 'августа', 'сентября', 'октября', 'ноября', 'декабря',
+)
+MONTHS_NOM = (
+    'Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь',
+    'Июль', 'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь',
 )
 
 
@@ -129,6 +134,80 @@ def week():
         days=days,
         offset=offset,
         selected_index=sel,
+    )
+
+
+@main.route('/profile')
+@login_required
+def profile():
+    achievements = sorted(
+        current_user.achievements,
+        key=lambda a: a.unlocked_at,
+        reverse=True,
+    )
+    return render_template('profile.html', user=current_user, achievements=achievements)
+
+
+@main.route('/statistics')
+@login_required
+def statistics():
+    offset = request.args.get('offset', 0, type=int)
+
+    today = date.today()
+    # целевой месяц = текущий + offset (с переносом года)
+    month_index = today.month - 1 + offset
+    year = today.year + month_index // 12
+    month = month_index % 12 + 1
+
+    first_day = date(year, month, 1)
+    last_dom = calendar.monthrange(year, month)[1]
+    last_day = date(year, month, last_dom)
+
+    user_habits = Habit.query.filter_by(user_id=current_user.id, is_active=True).all()
+
+    # выполненные привычки по датам месяца: {date: {habit_id, ...}}
+    logs = HabitLog.query.filter(
+        HabitLog.user_id == current_user.id,
+        HabitLog.is_done.is_(True),
+        HabitLog.log_date >= first_day,
+        HabitLog.log_date <= last_day,
+    ).all()
+    done_by_date = {}
+    for log in logs:
+        done_by_date.setdefault(log.log_date, set()).add(log.habit_id)
+
+    # сетка месяца (недели по 7 дней, 0 = пустая клетка)
+    cal = calendar.Calendar(firstweekday=0)  # 0 = понедельник
+    weeks = []
+    for week in cal.monthdayscalendar(year, month):
+        cells = []
+        for d in week:
+            if d == 0:
+                cells.append({'day': None, 'status': None, 'is_today': False})
+                continue
+
+            day_date = date(year, month, d)
+            iso_dow = day_date.isoweekday()  # 1=Пн ... 7=Вс
+            planned = [h for h in user_habits if _habit_scheduled_on(h, day_date, iso_dow)]
+
+            status = None
+            if planned:
+                planned_ids = {h.id for h in planned}
+                done_ids = done_by_date.get(day_date, set()) & planned_ids
+                if len(done_ids) == len(planned_ids):
+                    status = 'all'      # все выполнены -> зелёный
+                elif done_ids:
+                    status = 'some'     # хотя бы одна -> жёлтый
+
+            cells.append({'day': d, 'status': status, 'is_today': day_date == today})
+        weeks.append(cells)
+
+    return render_template(
+        'statistics.html',
+        weeks=weeks,
+        day_names=DAY_NAMES,
+        month_label=f'{MONTHS_NOM[month - 1]} {year}',
+        offset=offset,
     )
 
 

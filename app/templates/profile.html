@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+
+{% block title %}Профиль{% endblock %}
+
+{% block content %}
+<section class="profile-page">
+
+    <!-- Шапка: аватар + имя + опыт -->
+    <div class="profile-header">
+        <div class="profile-avatar">
+            {% if user.avatar_url %}
+                <img class="profile-avatar-img" src="{{ url_for('static', filename=user.avatar_url) }}" alt="">
+            {% else %}
+                <div class="profile-avatar-placeholder"></div>
+            {% endif %}
+        </div>
+
+        <div class="profile-meta">
+            <h1 class="profile-username">{{ user.username }}</h1>
+            <p class="profile-xp">Опыт: {{ user.experience }} XP</p>
+        </div>
+    </div>
+
+    <!-- Доп. информация -->
+    <div class="profile-info">
+        <p class="profile-email">{{ user.email }}</p>
+        <p class="profile-joined">В CozyHabits с {{ user.created_at.strftime('%d.%m.%Y') }}</p>
+    </div>
+
+    <!-- Награды -->
+    <div class="profile-achievements">
+        <h2 class="profile-achievements-title">Мои награды</h2>
+
+        <div class="achievements-list">
+            {% for ach in achievements %}
+            <div class="achievement">
+                <img class="achievement-icon" src="{{ url_for('static', filename=ach.icon_url) }}" alt="">
+                <span class="achievement-title">{{ ach.title }}</span>
+            </div>
+            {% else %}
+            <p class="achievements-empty">Пока нет наград</p>
+            {% endfor %}
+        </div>
+    </div>
+
+</section>
+{% endblock %}

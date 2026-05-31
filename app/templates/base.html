@@ -51,14 +51,18 @@
             <img src="{{ url_for('static', filename='images/dock/achievements_icon.png') }}" alt="">
             <p>Награды</p>
         </div>
-        <div class="dock-button">
-            <img src="{{ url_for('static', filename='images/dock/statistics_icon.png') }}" alt="">
-            <p>Статистика</p>
-        </div>
-        <div class="dock-button">
-            <img src="{{ url_for('static', filename='images/dock/user_icon.png') }}" alt="">
-            <p>Профиль</p>
-        </div>
+        <a href="{{ url_for('main.statistics') }}">
+            <div class="dock-button">
+                <img src="{{ url_for('static', filename='images/dock/statistics_icon.png') }}" alt="">
+                <p>Статистика</p>
+            </div>
+        </a>
+        <a href="{{ url_for('main.profile') }}">
+            <div class="dock-button">
+                <img src="{{ url_for('static', filename='images/dock/user_icon.png') }}" alt="">
+                <p>Профиль</p>
+            </div>
+        </a>
 
     </div>
 </div>
