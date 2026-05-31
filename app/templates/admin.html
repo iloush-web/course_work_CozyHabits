@@ -1,0 +1,93 @@
+{% extends "base.html" %}
+
+{% block title %}Админ — награды{% endblock %}
+
+{% block content %}
+<section class="admin-page">
+
+    <h1 class="admin-title">Управление наградами</h1>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <ul class="flash-list">
+                {% for category, msg in messages %}
+                    <li class="flash flash-{{ category }}">{{ msg }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+    {% endwith %}
+
+    <!-- ===== Награды за опыт ===== -->
+    <div class="admin-block">
+        <h2 class="admin-block-title">Награды за опыт (XP)</h2>
+
+        <form class="admin-form" method="POST"
+              action="{{ url_for('admin.reward_new') }}" enctype="multipart/form-data">
+            <label>
+                Название
+                <input type="text" name="title" required maxlength="120">
+            </label>
+            <label>
+                Порог опыта (XP)
+                <input type="number" name="required_xp" min="0" required>
+            </label>
+            <label>
+                Картинка
+                <input type="file" name="icon" accept="image/png,image/jpeg,image/gif,image/webp" required>
+            </label>
+            <button type="submit">Добавить награду</button>
+        </form>
+
+        <div class="admin-list">
+            {% for r in xp_rewards %}
+            <div class="admin-item">
+                <img class="admin-item-icon" src="{{ url_for('static', filename=r.icon_url) }}" alt="">
+                <span class="admin-item-title">{{ r.title }}</span>
+                <span class="admin-item-meta">{{ r.required_xp }} XP</span>
+                <form method="POST" action="{{ url_for('admin.reward_delete', reward_id=r.id) }}"
+                      onsubmit="return confirm('Удалить награду «{{ r.title }}»?');">
+                    <button type="submit" class="admin-delete-btn">Удалить</button>
+                </form>
+            </div>
+            {% else %}
+            <p class="admin-empty">Наград за опыт пока нет</p>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- ===== Недельные награды ===== -->
+    <div class="admin-block">
+        <h2 class="admin-block-title">Недельные награды (по очереди)</h2>
+
+        <form class="admin-form" method="POST"
+              action="{{ url_for('admin.weekly_new') }}" enctype="multipart/form-data">
+            <label>
+                Название
+                <input type="text" name="title" required maxlength="120">
+            </label>
+            <label>
+                Картинка
+                <input type="file" name="icon" accept="image/png,image/jpeg,image/gif,image/webp" required>
+            </label>
+            <button type="submit">Добавить недельную награду</button>
+        </form>
+
+        <div class="admin-list">
+            {% for r in weekly_rewards %}
+            <div class="admin-item">
+                <span class="admin-item-pos">#{{ r.position }}</span>
+                <img class="admin-item-icon" src="{{ url_for('static', filename=r.icon_url) }}" alt="">
+                <span class="admin-item-title">{{ r.title }}</span>
+                <form method="POST" action="{{ url_for('admin.weekly_delete', weekly_id=r.id) }}"
+                      onsubmit="return confirm('Удалить недельную награду «{{ r.title }}»?');">
+                    <button type="submit" class="admin-delete-btn">Удалить</button>
+                </form>
+            </div>
+            {% else %}
+            <p class="admin-empty">Недельных наград пока нет</p>
+            {% endfor %}
+        </div>
+    </div>
+
+</section>
+{% endblock %}

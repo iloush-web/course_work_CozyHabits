@@ -3,5 +3,95 @@
     flex-direction: row;
     justify-content: center;
     align-items: center;
-    gap: 15px;
+    gap: 5px;
+
+    padding: 10px;
+    background-color: var(--light-beige);
+    border-radius: 10px;
+    border: 2px solid var(--dark-green);
+}
+
+.week-day-btn {
+    text-align: center;
+    padding: 2px 4px;
+    border-radius: 5px;
+    background-color: var(--light-green);
+    
+}
+
+.week-day-btn.is-today {
+    background-color: var(--mid-beige);
+}
+
+.week-day-btn.is-selected {
+    outline: 2px solid var(--dark-green);
+}
+
+.week-selected-date {
+    text-align: center;
+    margin: 10px;
+}
+
+.week-habits {
+    /* background-color: var(--light-beige);
+    border-radius: 10px;
+    border: 2px solid var(--dark-green); */
+    /* padding: 10px; */
+
+    margin-bottom: 30px;
+}
+
+
+.week-habits .week-toggle-form {
+    background-color: var(--light-beige);
+    border-radius: 10px;
+    border: 2px solid var(--dark-green);
+    padding: 10px;
+    margin-bottom: 10px;
+}
+
+.week-done-title {
+    text-align: center;
+    margin: 10px;
+}
+
+.week-done {
+    background-color: var(--light-green);
+    border-radius: 10px;
+    border: 2px solid var(--dark-green);
+    padding: 10px;
+}
+
+.week-done .week-toggle-form {
+    margin-bottom: 5px;
+}
+
+/* Кастомный значок вместо стандартного чекбокса.
+   Размеры/отступы подстрой под себя. */
+.week-habit-check {
+    position: absolute;
+    opacity: 0;          /* прячем нативный чекбокс, но он остаётся кликабельным */
+    width: 0;
+    height: 0;
+}
+
+.week-habit-mark {
+    display: inline-block;
+    width: 32px;
+    height: 32px;
+    background-image: url("../images/checkbox/checkbox.png");
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+    cursor: pointer;
+    vertical-align: middle;
+}
+
+/* отмеченное состояние — звезда */
+.week-habit-check:checked ~ .week-habit-mark {
+    background-image: url("../images/checkbox/checkbox_done.png");
+}
+
+.week-arrow img {
+    width: 50px;
 }

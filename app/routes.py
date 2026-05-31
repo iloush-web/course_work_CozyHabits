@@ -5,13 +5,16 @@ from flask import Blueprint, abort, flash, redirect, render_template, request, u
 from flask_login import current_user, login_required
 
 from app.extensions import db
-from app.models import Habit, HabitLog
-from app.uploads import save_habit_icon, delete_habit_icon, is_allowed_image
+from app.models import Habit, HabitLog, Reward, UserReward, WeeklyReward, UserWeeklyReward
+from app.uploads import save_habit_icon, delete_habit_icon, is_allowed_image, save_avatar, delete_avatar
 
 main = Blueprint('main', __name__)
 
 VALID_FREQUENCIES = ('daily', 'weekly')
 VALID_DAYS = (1, 2, 3, 4, 5, 6, 7)  # 1=Пн ... 7=Вс
+
+XP_PER_HABIT = 10          # опыт за одну выполненную привычку
+WEEKLY_GOAL_PERCENT = 80   # порог выполнения за неделю для недельной награды
 
 DAY_NAMES = ('Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс')
 
@@ -35,6 +38,59 @@ def _habit_scheduled_on(habit, day: date, iso_dow: int) -> bool:
     if habit.frequency == 'weekly' and habit.target_days:
         return iso_dow in habit.target_days
     return False
+
+
+def _week_completion(user_id, monday, sunday, habits=None):
+    """Возвращает (выполнено, всего_запланировано, процент) за неделю."""
+    if habits is None:
+        habits = Habit.query.filter_by(user_id=user_id, is_active=True).all()
+
+    logs = HabitLog.query.filter(
+        HabitLog.user_id == user_id,
+        HabitLog.is_done.is_(True),
+        HabitLog.log_date >= monday,
+        HabitLog.log_date <= sunday,
+    ).all()
+    done_set = {(log.habit_id, log.log_date) for log in logs}
+
+    total = done = 0
+    for i in range(7):
+        d = monday + timedelta(days=i)
+        iso_dow = i + 1
+        for h in habits:
+            if _habit_scheduled_on(h, d, iso_dow):
+                total += 1
+                if (h.id, d) in done_set:
+                    done += 1
+
+    percent = round(done / total * 100) if total else 0
+    return done, total, percent
+
+
+def _grant_xp_rewards(user):
+    """Выдаёт пользователю все XP-награды, порог которых он достиг."""
+    earned_ids = {ur.reward_id for ur in user.user_rewards}
+    eligible = Reward.query.filter(Reward.required_xp <= user.experience).all()
+    for reward in eligible:
+        if reward.id not in earned_ids:
+            db.session.add(UserReward(user_id=user.id, reward_id=reward.id))
+
+
+def _maybe_grant_weekly_reward(user, monday, sunday):
+    """Если за неделю выполнено >= порога, выдаёт следующую недельную награду по очереди."""
+    _, _, percent = _week_completion(user.id, monday, sunday)
+    if percent < WEEKLY_GOAL_PERCENT:
+        return
+
+    # уже выдавали награду на этой неделе?
+    for uw in user.user_weekly_rewards:
+        if monday <= uw.obtained_at.date() <= sunday:
+            return
+
+    next_position = len(user.user_weekly_rewards) + 1
+    reward = WeeklyReward.query.filter_by(position=next_position).first()
+    if reward:
+        db.session.add(UserWeeklyReward(user_id=user.id, weekly_reward_id=reward.id))
 
 
 def _parse_form(form):
@@ -175,11 +231,21 @@ def habit_toggle(habit_id):
 
     if log:
         db.session.delete(log)  # снять отметку
+        current_user.experience = max(0, current_user.experience - XP_PER_HABIT)
     else:
         db.session.add(HabitLog(
             habit_id=habit.id, user_id=current_user.id,
             log_date=log_date, is_done=True,
         ))
+        current_user.experience += XP_PER_HABIT
+
+    db.session.flush()  # применить изменение опыта до выдачи наград
+
+    # выдача наград: за опыт + недельная (по неделе отмеченной даты)
+    _grant_xp_rewards(current_user)
+    monday = log_date - timedelta(days=log_date.weekday())
+    _maybe_grant_weekly_reward(current_user, monday, monday + timedelta(days=6))
+
     db.session.commit()
 
     # вернуться на ту же неделю и день
@@ -188,18 +254,82 @@ def habit_toggle(habit_id):
     return redirect(url_for('main.week', offset=offset, day=day))
 
 
+@main.route('/rewards')
+@login_required
+def rewards():
+    today = date.today()
+    monday = today - timedelta(days=today.weekday())
+    sunday = monday + timedelta(days=6)
+
+    _, _, percent = _week_completion(current_user.id, monday, sunday)
+    remaining = max(0, WEEKLY_GOAL_PERCENT - percent)
+
+    # ----- Недельные награды -----
+    # полученные (новые сверху)
+    earned_weekly = sorted(
+        current_user.user_weekly_rewards,
+        key=lambda uw: uw.obtained_at, reverse=True,
+    )
+    shelf = [uw.weekly_reward for uw in earned_weekly]
+    # следующая по очереди
+    next_position = len(current_user.user_weekly_rewards) + 1
+    next_weekly = WeeklyReward.query.filter_by(position=next_position).first()
+
+    # ----- Награды за опыт -----
+    earned_xp = sorted(
+        current_user.user_rewards,
+        key=lambda ur: ur.obtained_at, reverse=True,
+    )
+    earned_xp_rewards = [ur.reward for ur in earned_xp]
+    # следующая закрытая награда (с наименьшим порогом из ещё не полученных)
+    earned_ids = {ur.reward_id for ur in current_user.user_rewards}
+    next_xp = (
+        Reward.query
+        .filter(Reward.id.notin_(earned_ids) if earned_ids else True)
+        .order_by(Reward.required_xp)
+        .first()
+    )
+
+    return render_template(
+        'rewards.html',
+        user=current_user,
+        shelf=shelf,
+        next_weekly=next_weekly,
+        earned_xp_rewards=earned_xp_rewards,
+        next_xp=next_xp,
+        percent=percent,
+        remaining=remaining,
+        goal=WEEKLY_GOAL_PERCENT,
+    )
+
+
 @main.route('/profile')
 @login_required
 def profile():
-    # награды юзера: за опыт + недельные, новые сверху
-    earned = sorted(
-        list(current_user.user_rewards) + list(current_user.user_weekly_rewards),
-        key=lambda r: r.obtained_at,
-        reverse=True,
-    )
-    # у UserReward есть .reward, у UserWeeklyReward — .weekly_reward; оба с title/icon_url
-    rewards = [r.reward if hasattr(r, 'reward') else r.weekly_reward for r in earned]
-    return render_template('profile.html', user=current_user, achievements=rewards)
+    return render_template('profile.html', user=current_user)
+
+
+@main.route('/profile/avatar', methods=['POST'])
+@login_required
+def profile_avatar():
+    file = request.files.get('avatar')
+    errors = []
+    icon_file = _validate_icon_upload(file, errors)
+
+    if not file or not file.filename:
+        errors.append('Выберите картинку для аватара.')
+
+    if errors:
+        for e in errors:
+            flash(e, 'error')
+        return redirect(url_for('main.profile'))
+
+    old_avatar = current_user.avatar_url
+    current_user.avatar_url = save_avatar(icon_file)
+    delete_avatar(old_avatar)
+    db.session.commit()
+    flash('Аватар обновлён.', 'success')
+    return redirect(url_for('main.profile'))
 
 
 @main.route('/statistics')

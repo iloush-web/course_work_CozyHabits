@@ -1,7 +1,12 @@
 :root {
-    --dark-green: #284627;
+    /* --dark-green: #284627; */
+    --dark-green: #3d5a40;
+    --light-green: #d7d6a5;
+    --mid-beige: #f2ce74;
+
     --dark-green-transp: #28462783;
-    --light-beige: rgb(255, 243, 226);
+    /* --light-beige: rgb(255, 243, 226); */
+    --light-beige: #fdf7eb;
 
     --dock-height: 75px;   /* высота дока (55px) + воздух вокруг */
     --btn-font-size: 1rem; /* единый размер текста кнопок */
@@ -68,6 +73,7 @@ h1 {
 }
 
 h2 {
+    color: var(--dark-green);
     font-size: 1.5rem;
     font-weight: 600;
 }

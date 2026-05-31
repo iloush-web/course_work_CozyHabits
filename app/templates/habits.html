@@ -21,13 +21,14 @@
 <div id="all-habits">
 
     {% for habit in habits %}
-    <div class="habit-box">
+    {% set has_icon = habit.icon and habit.icon != 'star' %}
+    <div class="habit-box {% if not has_icon %}no-icon{% endif %}">
+        {% if has_icon %}
         <div class="habit-img-wrapper">
             <img class="habit-img-frame" src="{{ url_for('static', filename='images/frames/frame_1.png') }}" alt="">
-            <img class="habit-img"
-                 src="{{ url_for('static', filename=habit.icon) if habit.icon else url_for('static', filename='images/book_draft.jpg') }}"
-                 alt="">
+            <img class="habit-img" src="{{ url_for('static', filename=habit.icon) }}" alt="">
         </div>
+        {% endif %}
         <h1 class="habit-text">{{ habit.title }}</h1>
         <p class="time-text">
             {% if habit.frequency == 'daily' %}

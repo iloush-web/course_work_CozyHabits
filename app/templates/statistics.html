@@ -35,8 +35,8 @@
 
     <!-- Листание месяцев (перезагрузка страницы) -->
     <div class="stats-arrows">
-        <a class="stats-arrow stats-arrow-prev" href="{{ url_for('main.statistics', offset=offset - 1) }}">‹</a>
-        <a class="stats-arrow stats-arrow-next" href="{{ url_for('main.statistics', offset=offset + 1) }}">›</a>
+        <a class="stats-arrow stats-arrow-prev" href="{{ url_for('main.statistics', offset=offset - 1) }}"><img src="{{ url_for('static', filename='images/arrows/arrow_l.PNG')}}" alt="arrow left"></a>
+        <a class="stats-arrow stats-arrow-next" href="{{ url_for('main.statistics', offset=offset + 1) }}"><img src="{{ url_for('static', filename='images/arrows/arrow_r.PNG')}}" alt="arrow right"></a>
     </div>
 
 </section>

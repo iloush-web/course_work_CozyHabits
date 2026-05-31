@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+
+{% block title %}Награды{% endblock %}
+
+{% block content %}
+<section class="rewards-page">
+
+    <!-- Текущий опыт -->
+    <div class="rewards-xp">
+        <span class="rewards-xp-value">{{ user.experience }}</span> XP
+    </div>
+
+    <!-- Полка: полученные недельные награды -->
+    <h1 class="rewards-shelf-title">Моя полка</h1>
+    <div class="rewards-shelf">
+        {% for reward in shelf %}
+        <div class="shelf-item" title="{{ reward.title }}">
+            <img style="width: 80px;" class="shelf-item-icon" src="{{ url_for('static', filename=reward.icon_url) }}"
+                alt="">
+            <span class="shelf-item-title">{{ reward.title }}</span>
+        </div>
+        {% else %}
+        <p class="rewards-shelf-empty">Пока нет недельных наград</p>
+        {% endfor %}
+
+        <h2 class="title-next-week">Следующая награда недели:</h2>
+
+        <!-- Следующая недельная награда (закрыта) -->
+        {% if next_weekly %}
+        <div class="shelf-item is-locked" title="{{ next_weekly.title }}">
+            <img style="width: 80px;" class="shelf-item-icon"
+                src="{{ url_for('static', filename=next_weekly.icon_url) }}" alt="">
+            <span class="shelf-item-title">{{ next_weekly.title }}</span>
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- Награды за опыт -->
+    <h2 class="rewards-xp-title">Награды за опыт</h2>
+    <div class="rewards-xp-list">
+        {% for reward in earned_xp_rewards %}
+        <div class="xp-reward is-unlocked">
+            <img style="width: 80px;" class="xp-reward-icon" src="{{ url_for('static', filename=reward.icon_url) }}"
+                alt="">
+            <span class="xp-reward-title">{{ reward.title }}</span>
+            <span class="xp-reward-req">{{ reward.required_xp }} XP</span>
+        </div>
+        {% endfor %}
+
+        <h2 class="title-next-xp">Следующая награда за опыт:</h2>
+
+
+        <!-- Следующая награда за опыт (закрыта) -->
+        {% if next_xp %}
+        <div class="xp-reward is-locked">
+            <img style="width: 80px;" class="xp-reward-icon" src="{{ url_for('static', filename=next_xp.icon_url) }}"
+                alt="">
+            <span class="xp-reward-title">{{ next_xp.title }}</span>
+            <span class="xp-reward-req">{{ next_xp.required_xp }} XP</span>
+        </div>
+        {% elif not earned_xp_rewards %}
+        <p class="rewards-xp-empty">Награды за опыт пока не добавлены</p>
+        {% endif %}
+    </div>
+
+    <!-- Прогресс за эту неделю -->
+    <div class="rewards-week">
+        {% if remaining > 0 %}
+        <p class="rewards-week-note">
+            Осталось выполнить ещё {{ remaining }}% привычек на этой неделе для получения награды
+        </p>
+        {% else %}
+        <p class="rewards-week-note">Награда за эту неделю получена!</p>
+        {% endif %}
+
+        <div class="rewards-progress">
+            <div class="rewards-progress-bar-container">
+                <div class="rewards-progress-bar" style="width: {{ percent }}%"></div>
+            </div>
+            <span class="rewards-progress-label">{{ percent }}% задач выполнено</span>
+        </div>
+    </div>
+
+</section>
+{% endblock %}

@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-
+ 
 {% block title %}Неделя{% endblock %}
 
 {# Строка привычки с чекбоксом отметки выполнения #}
@@ -12,6 +12,7 @@
     <label class="week-habit {% if done %}is-done{% endif %}">
         <input class="week-habit-check" type="checkbox"
                {% if done %}checked{% endif %} onchange="this.form.submit()">
+        <span class="week-habit-mark" aria-hidden="true"></span>
         <span class="week-habit-title">{{ habit.title }}</span>
         {% if habit.reminder_time %}
         <span class="week-habit-time">{{ habit.reminder_time.strftime('%H:%M') }}</span>
@@ -23,9 +24,14 @@
 {% block content %}
 <section class="week-page">
 
+    <!-- <div class="stats-arrows">
+        <a class="stats-arrow stats-arrow-prev" href="{{ url_for('main.statistics', offset=offset - 1) }}"><img src="{{ url_for('static', filename='images/arrows/arrow_l.PNG')}}" alt="arrow left"></a>
+        <a class="stats-arrow stats-arrow-next" href="{{ url_for('main.statistics', offset=offset + 1) }}"><img src="{{ url_for('static', filename='images/arrows/arrow_r.PNG')}}" alt="arrow right"></a>
+    </div> -->
+
     <!-- Полоска дней недели -->
     <div class="week-strip">
-        <a class="week-arrow week-arrow-prev" href="{{ url_for('main.week', offset=offset - 1) }}">‹---</a>
+        <a class="week-arrow week-arrow-prev" href="{{ url_for('main.week', offset=offset - 1) }}"><img src="{{ url_for('static', filename='images/arrows/arrow_l.PNG')}}" alt="arrow left"></a>
 
         {% for day in days %}
         <a class="week-day-btn {% if day.is_selected %}is-selected{% endif %} {% if day.is_today %}is-today{% endif %}"
@@ -37,7 +43,7 @@
         </a>
         {% endfor %}
 
-        <a class="week-arrow week-arrow-next" href="{{ url_for('main.week', offset=offset + 1) }}">---›</a>
+        <a class="week-arrow week-arrow-next" href="{{ url_for('main.week', offset=offset + 1) }}"><img src="{{ url_for('static', filename='images/arrows/arrow_r.PNG')}}" alt="arrow right"></a>
 
     </div>
 
@@ -64,7 +70,8 @@
         <!-- Выполнено -->
         {% if day.done %}
         <div class="week-done">
-            <h2 class="week-done-title">Выполнено</h2>
+            <h1 class="week-done-title">Выполненные</h1>
+
             {% for habit in day.done %}
                 {{ habit_row(habit, true, day, offset) }}
             {% endfor %}

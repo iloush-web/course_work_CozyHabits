@@ -1,0 +1,46 @@
+.rewards-shelf {
+    background-color: var(--light-beige);
+    border-radius: 10px;
+    border: 2px solid var(--dark-green);
+}
+
+.rewards-xp-list {
+    background-color: var(--light-beige);
+    border-radius: 10px;
+    border: 2px solid var(--dark-green);
+}
+
+.rewards-progress-bar-container {
+    border-radius: 10px;
+    border: 2px solid var(--dark-green);
+}
+
+.rewards-progress-bar {
+    height: 30px;
+    background-color: var(--dark-green);
+    border-radius: 5px;
+}
+
+.shelf-item {
+    display: flex;
+    align-items: center;
+    padding: 10px;
+}
+
+.is-locked {
+    filter: blur(2px) saturate(0);
+}
+
+.xp-reward {
+    display: flex;
+    align-items: center;
+    padding: 10px;
+}
+
+.title-next-week {
+    margin-left: 10px;
+}
+
+.title-next-xp {
+    margin-left: 10px;
+}

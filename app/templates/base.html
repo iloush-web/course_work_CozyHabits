@@ -9,13 +9,19 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/habits.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/reg_auth.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/week.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/rewards.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/stat.css') }}">
+
 
 </head>
 <body>
 
     <header id="auth-bar">
         {% if current_user.is_authenticated %}
-            <span>Привет, {{ current_user.username }}{% if current_user.is_admin %} (admin){% endif %}!</span>
+            <span>Привет, {{ current_user.username }}!</span>
+            {% if current_user.is_admin %}
+                <a href="{{ url_for('admin.dashboard') }}">Админ-панель</a>
+            {% endif %}
             <a href="{{ url_for('auth.logout') }}">Выйти</a>
         {% else %}
             <a href="{{ url_for('auth.login') }}">Войти</a>
@@ -47,10 +53,12 @@
                 <p>Неделя</p>
             </div>
         </a>
-        <div class="dock-button">
-            <img src="{{ url_for('static', filename='images/dock/achievements_icon.png') }}" alt="">
-            <p>Награды</p>
-        </div>
+        <a href="{{ url_for('main.rewards') }}">
+            <div class="dock-button">
+                <img src="{{ url_for('static', filename='images/dock/achievements_icon.png') }}" alt="">
+                <p>Награды</p>
+            </div>
+        </a>
         <a href="{{ url_for('main.statistics') }}">
             <div class="dock-button">
                 <img src="{{ url_for('static', filename='images/dock/statistics_icon.png') }}" alt="">

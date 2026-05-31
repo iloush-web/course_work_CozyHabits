@@ -1,0 +1,90 @@
+/* ===== Страница статистики ===== */
+
+.stats-title {
+    text-align: center;
+    margin: 10px 0 20px;
+}
+
+/* ===== Календарь ===== */
+/* Каждая .stats-week — это одна строка из 7 ячеек.
+   grid с 7 равными колонками выравнивает дни идеально по столбцам. */
+
+.stats-calendar {
+    background-color: var(--light-beige);
+    border: 2px solid var(--dark-green);
+    border-radius: 10px;
+    padding: 10px;
+}
+
+.stats-week {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);  /* 7 одинаковых колонок */
+    gap: 4px;
+}
+
+/* Шапка с днями недели (Пн Вт Ср ...) */
+.stats-week-head {
+    margin-bottom: 8px;
+    background-color: var(--light-green);
+}
+
+.stats-dow {
+    text-align: center;
+    font-weight: 600;
+    font-size: 1.2rem;
+    color: var(--dark-green);
+}
+
+/* .stats-cell — обёртка одной клетки сетки.
+   Она ВСЕГДА есть (даже для пустых дней в начале/конце месяца),
+   чтобы числа не съезжали. Делаем квадрат через aspect-ratio. */
+.stats-cell {
+    aspect-ratio: 1 / 1;          /* квадратная клетка */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* .stats-day — само число дня (есть только в непустых клетках).
+   Именно его красим/скругляем — как «капсулу» из макета. */
+.stats-day {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 80%;
+    height: 80%;
+    border-radius: 8px;
+    font-size: 1.2rem;
+}
+
+/* Сегодня */
+.stats-day.is-today {
+    outline: 2px solid var(--dark-green);
+}
+
+/* Все запланированные привычки выполнены -> зелёный */
+.stats-day.is-all {
+    background-color: var(--light-green);
+}
+
+/* Выполнена хотя бы одна -> жёлтый */
+.stats-day.is-some {
+    background-color: var(--mustard, #f2ce74);
+}
+
+/* ===== Стрелки листания месяцев ===== */
+.stats-arrows {
+    width: max-content;
+    margin: 15px auto;
+    padding: 2px 20px;
+    display: flex;
+    
+    gap: 40px;
+    background-color: var(--light-beige);
+    border-radius: 10px;
+    border: 2px solid var(--dark-green);
+}
+
+.stats-arrows img {
+    width: 80px;
+}
