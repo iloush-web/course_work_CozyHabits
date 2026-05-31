@@ -1,30 +1,7 @@
-# Виртуальное окружение
-ve/
-venv/
-.venv/
-
-# Python кэш
-__pycache__/
-*.pyc
-*.pyo
-
-# Локальная SQLite-база (в контейнере будет PostgreSQL)
+/ve
+/тест
+*/__pycache__
+/__pycache__
 *.db
-cozyhabits.db
-
-# Git и IDE
-.git/
-.gitignore
-.vscode/
-.idea/
-
-# Docker-файлы (не нужны внутри образа)
-Dockerfile
-.dockerignore
-docker-compose.yml
-
-# Прочее
-*.md
 .env
-тест/
 DEPLOY.md

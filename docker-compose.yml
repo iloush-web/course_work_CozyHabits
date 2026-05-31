@@ -1,0 +1,47 @@
+services:
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-cozy}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-cozy_pass}
+      POSTGRES_DB: ${POSTGRES_DB:-cozyhabits}
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-cozy} -d ${POSTGRES_DB:-cozyhabits}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  web:
+    build: .
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgresql://${POSTGRES_USER:-cozy}:${POSTGRES_PASSWORD:-cozy_pass}@db:5432/${POSTGRES_DB:-cozyhabits}
+      SECRET_KEY: ${SECRET_KEY:-change-me-in-prod}
+      FLASK_DEBUG: "0"
+    volumes:
+      # загруженные картинки (аватары, иконки) переживают пересоздание контейнера
+      - uploads:/app/app/static/uploads
+    # порт наружу не пробрасываем — доступ только через nginx
+
+  nginx:
+    image: nginx:1.27-alpine
+    restart: unless-stopped
+    depends_on:
+      - web
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
+      # та же статика и загрузки, что у web — nginx отдаёт их напрямую
+      - ./app/static:/app/static:ro
+      - uploads:/app/static/uploads:ro
+
+volumes:
+  pg_data:
+  uploads:
