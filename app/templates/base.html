@@ -17,6 +17,7 @@
 <body>
 
     <header id="auth-bar">
+        <p style="color: red;">учебный проект! не вводите свои личные/персональные данные!!!</p>
         {% if current_user.is_authenticated %}
             <span>Привет, {{ current_user.username }}!</span>
             {% if current_user.is_admin %}
