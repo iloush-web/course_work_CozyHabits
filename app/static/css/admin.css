@@ -1,0 +1,166 @@
+.admin-page {
+    max-width: 600px;
+    margin: auto;
+    padding: 10px;
+}
+
+.admin-title {
+    color: var(--dark-green);
+    text-align: center;
+    margin: 10px 0 20px;
+}
+
+/* Блок (XP / недельные) */
+.admin-block {
+    margin-bottom: 25px;
+    padding: 15px;
+    background-color: var(--light-beige);
+    border-radius: 10px;
+    border: 2px solid var(--dark-green);
+}
+
+.admin-block-title {
+    color: var(--dark-green);
+    margin-bottom: 12px;
+}
+
+/* Форма добавления */
+.admin-form {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 20px;
+    padding-bottom: 20px;
+    border-bottom: 2px solid var(--dark-green-transp);
+}
+
+.admin-form label {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    color: var(--dark-green);
+    font-weight: 600;
+}
+
+.admin-form input[type="text"],
+.admin-form input[type="number"] {
+    width: 100%;
+    font-family: "Raleway";
+    font-size: 16px;
+    padding: 6px;
+    border: 1px solid var(--dark-green);
+    border-radius: 5px;
+    background-color: white;
+    outline: none;
+}
+
+.admin-form input[type="text"]:focus-visible,
+.admin-form input[type="number"]:focus-visible {
+    outline: 2px solid #8eb67b;
+}
+
+.admin-form input[type="file"] {
+    width: 100%;
+    padding: 4px;
+    background-color: white;
+    color: #555;
+    font-size: 14px;
+    border: 1px solid var(--dark-green);
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.admin-form input[type="file"]::file-selector-button {
+    font-family: "Raleway";
+    font-size: var(--btn-font-size);
+    padding: 6px 14px;
+    margin-right: 10px;
+    background-color: var(--dark-green);
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.admin-form button[type="submit"] {
+    font-family: "Raleway-Italic";
+    font-size: var(--btn-font-size);
+    padding: 8px 20px;
+    width: max-content;
+    background-color: var(--dark-green);
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.admin-form button[type="submit"]:active {
+    outline: 2px solid #8eb67b;
+}
+
+/* Список наград */
+.admin-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+/* Карточка награды — компактная, в строку */
+.admin-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 6px 10px;
+    background-color: var(--light-green);
+    border-radius: 8px;
+}
+
+.admin-item-pos {
+    font-family: "Raleway-Italic";
+    font-weight: 700;
+    color: var(--dark-green);
+    min-width: 28px;
+}
+
+/* Маленькая иконка награды */
+.admin-item-icon {
+    width: 40px;
+    height: 40px;
+    object-fit: cover;
+    border-radius: 6px;
+    border: 1px solid var(--dark-green);
+    flex-shrink: 0;
+}
+
+.admin-item-title {
+    flex: 1;
+    color: var(--dark-green);
+    font-weight: 600;
+}
+
+.admin-item-meta {
+    font-family: "Raleway-Italic";
+    color: var(--dark-green);
+}
+
+.admin-empty {
+    color: var(--dark-green);
+    padding: 6px 0;
+}
+
+/* Кнопка удаления — компактная, красная */
+.admin-delete-btn {
+    font-family: "Raleway";
+    font-size: 0.8rem;
+    padding: 5px 10px;
+    background-color: #b53d3d;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    flex-shrink: 0;
+}
+
+.admin-delete-btn:hover {
+    background-color: #8f2f2f;
+}

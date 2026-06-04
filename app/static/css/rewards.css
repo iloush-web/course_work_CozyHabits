@@ -57,6 +57,10 @@
     gap: 5px;
     padding: 10px;
     text-align: center;
+    
+    background-color: var(--light-green);
+    border-radius: 8px;
+
 }
 
 .shelf-item-icon {
@@ -106,6 +110,7 @@
 /* Закрытая (ещё не полученная) награда */
 .is-locked {
     filter: blur(2px) saturate(0);
+    background-color: transparent;
 }
 
 /* Заглушки "пусто" */

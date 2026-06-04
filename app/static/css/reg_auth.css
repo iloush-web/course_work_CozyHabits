@@ -32,7 +32,8 @@ input:focus-visible {
     padding-top: 100px;
     height: 100%;
     margin: auto;
-    width: 70%;
+    max-width: 600px;
+    /* width: 70%; */
 }
 
 .auth-page h1 {
@@ -58,5 +59,45 @@ input:focus-visible {
 
 .form-button:active {
     outline: 2px solid #8eb67b;
-    
+
+}
+
+/* Flash-сообщения (ошибки/успех) */
+.flash-list {
+    list-style: none;
+    margin: 0 0 15px;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.flash {
+    padding: 10px 14px;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    border: 2px solid;
+}
+
+/* Ошибки — красные */
+.flash-error {
+    color: #8f2f2f;
+    background-color: #f7e3e3;
+    border-color: #b53d3d;
+}
+
+/* Успех — зелёные */
+.flash-success {
+    color: var(--dark-green);
+    background-color: var(--light-green);
+    border-color: var(--dark-green);
+}
+
+/* Инфо/прочее — бежевые */
+.flash-info,
+.flash-warning {
+    color: var(--dark-green);
+    background-color: var(--light-beige);
+    border-color: var(--dark-green);
 }
