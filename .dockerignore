@@ -20,6 +20,7 @@ cozyhabits.db
 
 # Docker-файлы (не нужны внутри образа)
 Dockerfile
+app/Dockerfile
 .dockerignore
 docker-compose.yml
 

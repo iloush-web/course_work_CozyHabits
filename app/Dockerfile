@@ -6,7 +6,8 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
 
 WORKDIR /app
 
-# Сначала зависимости — этот слой кэшируется, пока requirements.txt не меняется
+# Пути в COPY считаются от build context (корень проекта), а не от этого файла.
+# Сначала зависимости - слой кэшируется, пока requirements.txt не меняется
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
