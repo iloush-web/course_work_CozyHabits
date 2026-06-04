@@ -1,7 +1,7 @@
 import calendar
 from datetime import datetime, date, timedelta
 
-from flask import Blueprint, abort, flash, redirect, render_template, request, url_for
+from flask import Blueprint, abort, current_app, flash, redirect, render_template, request, url_for
 from flask_login import current_user, login_required
 
 from sqlalchemy import func
@@ -146,6 +146,20 @@ def _get_own_habit_or_404(habit_id: int) -> Habit:
     if habit.user_id != current_user.id:
         abort(403)
     return habit
+
+
+@main.route('/sw.js')
+def service_worker():
+    # отдаём SW с корня, чтобы его scope покрывал весь сайт
+    resp = current_app.send_static_file('sw.js')
+    resp.headers['Service-Worker-Allowed'] = '/'
+    resp.headers['Cache-Control'] = 'no-cache'
+    return resp
+
+
+@main.route('/manifest.json')
+def manifest():
+    return current_app.send_static_file('manifest.json')
 
 
 @main.route('/')
