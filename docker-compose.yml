@@ -26,6 +26,7 @@ services:
       DATABASE_URL: postgresql://${POSTGRES_USER:-cozy}:${POSTGRES_PASSWORD:-cozy_pass}@db:5432/${POSTGRES_DB:-cozyhabits}
       SECRET_KEY: ${SECRET_KEY:-change-me-in-prod}
       FLASK_DEBUG: "0"
+      TZ: ${TZ:-Europe/Moscow}
       VAPID_PUBLIC_KEY: ${VAPID_PUBLIC_KEY:-}
       VAPID_PRIVATE_KEY: ${VAPID_PRIVATE_KEY:-}
       VAPID_CLAIM_EMAIL: ${VAPID_CLAIM_EMAIL:-mailto:admin@example.com}
@@ -46,6 +47,7 @@ services:
     environment:
       DATABASE_URL: postgresql://${POSTGRES_USER:-cozy}:${POSTGRES_PASSWORD:-cozy_pass}@db:5432/${POSTGRES_DB:-cozyhabits}
       SECRET_KEY: ${SECRET_KEY:-change-me-in-prod}
+      TZ: ${TZ:-Europe/Moscow}
       VAPID_PUBLIC_KEY: ${VAPID_PUBLIC_KEY:-}
       VAPID_PRIVATE_KEY: ${VAPID_PRIVATE_KEY:-}
       VAPID_CLAIM_EMAIL: ${VAPID_CLAIM_EMAIL:-mailto:admin@example.com}

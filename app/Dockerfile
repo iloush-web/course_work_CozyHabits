@@ -6,6 +6,10 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
 
 WORKDIR /app
 
+# tzdata — чтобы работала переменная TZ (часовые пояса), иначе контейнер в UTC
+RUN apt-get update && apt-get install -y --no-install-recommends tzdata \
+    && rm -rf /var/lib/apt/lists/*
+
 # Пути в COPY считаются от build context (корень проекта), а не от этого файла.
 # Сначала зависимости - слой кэшируется, пока requirements.txt не меняется
 COPY requirements.txt .
