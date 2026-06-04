@@ -21,3 +21,9 @@ class Config:
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
     MAX_CONTENT_LENGTH = 5 * 1024 * 1024  # 5 MB
+
+    # Web Push (VAPID). Приватный ключ — секрет, держим в .env.
+    VAPID_PUBLIC_KEY = os.environ.get('VAPID_PUBLIC_KEY', '')
+    VAPID_PRIVATE_KEY = os.environ.get('VAPID_PRIVATE_KEY', '')
+    # контакт администратора для push-сервисов (требование стандарта)
+    VAPID_CLAIM_EMAIL = os.environ.get('VAPID_CLAIM_EMAIL', 'mailto:admin@cozyhabits.undo.it')

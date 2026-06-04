@@ -66,6 +66,13 @@
         <p class="profile-joined">В CozyHabits с {{ user.created_at.strftime('%d.%m.%Y') }}</p>
     </div>
 
+    <!-- Push-уведомления -->
+    <div class="profile-push">
+        <p class="profile-push-note">Напоминания о привычках по времени</p>
+        <button id="push-enable-btn" class="profile-push-btn" type="button">Включить уведомления</button>
+        <button id="push-test-btn" class="profile-push-btn" type="button">Тест</button>
+    </div>
+
     <!-- Топ за неделю (по выполненным привычкам) -->
     <h2 class="leaderboard-title">Топ недели</h2>
     <ol class="leaderboard">

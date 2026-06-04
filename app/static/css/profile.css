@@ -151,6 +151,42 @@
     color: var(--dark-green);
 }
 
+/* ===== Push-уведомления ===== */
+.profile-push {
+    margin-top: 15px;
+    padding: 15px;
+    background-color: var(--light-beige);
+    border-radius: 10px;
+    border: 2px solid var(--dark-green);
+}
+
+.profile-push-note {
+    color: var(--dark-green);
+    font-weight: 600;
+    margin-bottom: 10px;
+}
+
+.profile-push-btn {
+    font-family: "Raleway-Italic";
+    font-size: var(--btn-font-size);
+    padding: 8px 18px;
+    margin-right: 8px;
+    background-color: var(--dark-green);
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.profile-push-btn:active {
+    outline: 2px solid #8eb67b;
+}
+
+.profile-push-btn:disabled {
+    opacity: 0.6;
+    cursor: default;
+}
+
 /* ===== Топы пользователей ===== */
 .leaderboard-title {
     color: var(--dark-green);

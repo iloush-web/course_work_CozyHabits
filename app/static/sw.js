@@ -1,6 +1,6 @@
 // Service Worker для CozyHabits (PWA)
 // Версию меняй при обновлении, чтобы сбросить кэш.
-const CACHE_VERSION = 'cozy-v1';
+const CACHE_VERSION = 'cozy-v2';
 
 // Установка — сразу активируем новый SW
 self.addEventListener('install', (event) => {
@@ -37,5 +37,49 @@ self.addEventListener('fetch', (event) => {
                 return res;
             })
             .catch(() => caches.match(req))   // нет сети — отдаём из кэша
+    );
+});
+
+// Приём пуша: показать уведомление (работает даже когда сайт закрыт)
+self.addEventListener('push', (event) => {
+    let data = { title: 'CozyHabits', body: '', url: '/' };
+    try {
+        if (event.data) {
+            data = Object.assign(data, event.data.json());
+        }
+    } catch (e) {
+        if (event.data) data.body = event.data.text();
+    }
+
+    event.waitUntil(
+        self.registration.showNotification(data.title, {
+            body: data.body,
+            icon: '/static/images/icons/icon-192.png',
+            badge: '/static/images/icons/icon-192.png',
+            data: { url: data.url || '/' },
+        })
+    );
+});
+
+// Клик по уведомлению: открыть/сфокусировать сайт на нужной странице
+self.addEventListener('notificationclick', (event) => {
+    event.notification.close();
+    const targetUrl = (event.notification.data && event.notification.data.url) || '/';
+
+    event.waitUntil(
+        self.clients.matchAll({ type: 'window', includeUncontrolled: true })
+            .then((clientList) => {
+                // если вкладка уже открыта — фокусируем её
+                for (const client of clientList) {
+                    if ('focus' in client) {
+                        client.navigate(targetUrl);
+                        return client.focus();
+                    }
+                }
+                // иначе открываем новую
+                if (self.clients.openWindow) {
+                    return self.clients.openWindow(targetUrl);
+                }
+            })
     );
 });

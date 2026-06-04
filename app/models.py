@@ -28,6 +28,7 @@ class User(UserMixin, db.Model):
     habit_logs = db.relationship('HabitLog', backref='user', lazy=True, cascade='all, delete-orphan')
     user_rewards = db.relationship('UserReward', backref='user', lazy=True, cascade='all, delete-orphan')
     user_weekly_rewards = db.relationship('UserWeeklyReward', backref='user', lazy=True, cascade='all, delete-orphan')
+    push_subscriptions = db.relationship('PushSubscription', backref='user', lazy=True, cascade='all, delete-orphan')
 
     def set_password(self, password: str) -> None:
         self.password_hash = bcrypt.generate_password_hash(password).decode('utf-8')
@@ -62,6 +63,18 @@ class RecommendedHabit(db.Model):
     title = db.Column(db.String(120), nullable=False)
     description = db.Column(db.Text, nullable=True)
     icon = db.Column(db.String(255), default='star', nullable=True)
+
+
+class PushSubscription(db.Model):
+    """Подписка браузера на web-push. Одна на устройство/браузер пользователя."""
+    __tablename__ = 'push_subscriptions'
+
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    endpoint = db.Column(db.Text, unique=True, nullable=False)  # URL push-сервиса (уникален)
+    p256dh = db.Column(db.String(255), nullable=False)          # публичный ключ клиента
+    auth = db.Column(db.String(255), nullable=False)            # секрет аутентификации
+    created_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
 
 
 class HabitLog(db.Model):

@@ -10,3 +10,4 @@ DEPLOY.md
 # Загруженные пользователями файлы — хранятся на сервере (docker volume), не в гите
 app/static/uploads/*
 !app/static/uploads/.gitkeep
+.env.example

@@ -7,7 +7,7 @@ from flask_login import current_user, login_required
 from sqlalchemy import func
 
 from app.extensions import db
-from app.models import User, Habit, HabitLog, Reward, UserReward, WeeklyReward, UserWeeklyReward
+from app.models import User, Habit, HabitLog, Reward, UserReward, WeeklyReward, UserWeeklyReward, PushSubscription
 from app.uploads import save_habit_icon, delete_habit_icon, is_allowed_image, save_avatar, delete_avatar
 
 main = Blueprint('main', __name__)
@@ -160,6 +160,69 @@ def service_worker():
 @main.route('/manifest.json')
 def manifest():
     return current_app.send_static_file('manifest.json')
+
+
+# ===== Push-уведомления =====
+
+@main.route('/push/public-key')
+@login_required
+def push_public_key():
+    # фронту нужен публичный VAPID-ключ, чтобы оформить подписку
+    return {'publicKey': current_app.config['VAPID_PUBLIC_KEY']}
+
+
+@main.route('/push/subscribe', methods=['POST'])
+@login_required
+def push_subscribe():
+    data = request.get_json(silent=True) or {}
+    endpoint = data.get('endpoint')
+    keys = data.get('keys') or {}
+    p256dh = keys.get('p256dh')
+    auth = keys.get('auth')
+
+    if not endpoint or not p256dh or not auth:
+        return {'error': 'invalid subscription'}, 400
+
+    existing = PushSubscription.query.filter_by(endpoint=endpoint).first()
+    if existing:
+        # эта подписка уже есть — перепривяжем к текущему пользователю на всякий случай
+        existing.user_id = current_user.id
+        existing.p256dh = p256dh
+        existing.auth = auth
+    else:
+        db.session.add(PushSubscription(
+            user_id=current_user.id,
+            endpoint=endpoint, p256dh=p256dh, auth=auth,
+        ))
+    db.session.commit()
+    return {'ok': True}
+
+
+@main.route('/push/unsubscribe', methods=['POST'])
+@login_required
+def push_unsubscribe():
+    data = request.get_json(silent=True) or {}
+    endpoint = data.get('endpoint')
+    if endpoint:
+        PushSubscription.query.filter_by(
+            endpoint=endpoint, user_id=current_user.id
+        ).delete()
+        db.session.commit()
+    return {'ok': True}
+
+
+@main.route('/push/test', methods=['POST'])
+@login_required
+def push_test():
+    # ручная проверка: отправить себе тестовый пуш
+    from app.push import send_push_to_user
+    sent = send_push_to_user(
+        current_user.id,
+        'CozyHabits',
+        'Тестовое уведомление работает! 🌿',
+        url=url_for('main.habits'),
+    )
+    return {'sent': sent}
 
 
 @main.route('/')
