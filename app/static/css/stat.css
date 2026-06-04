@@ -1,5 +1,10 @@
 /* ===== Страница статистики ===== */
 
+.stats-page {
+    max-width: 500px;
+    margin: auto;
+}
+
 .stats-title {
     text-align: center;
     margin: 10px 0 20px;

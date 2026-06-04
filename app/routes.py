@@ -4,8 +4,10 @@ from datetime import datetime, date, timedelta
 from flask import Blueprint, abort, flash, redirect, render_template, request, url_for
 from flask_login import current_user, login_required
 
+from sqlalchemy import func
+
 from app.extensions import db
-from app.models import Habit, HabitLog, Reward, UserReward, WeeklyReward, UserWeeklyReward
+from app.models import User, Habit, HabitLog, Reward, UserReward, WeeklyReward, UserWeeklyReward
 from app.uploads import save_habit_icon, delete_habit_icon, is_allowed_image, save_avatar, delete_avatar
 
 main = Blueprint('main', __name__)
@@ -306,7 +308,42 @@ def rewards():
 @main.route('/profile')
 @login_required
 def profile():
-    return render_template('profile.html', user=current_user)
+    today = date.today()
+    monday = today - timedelta(days=today.weekday())
+    sunday = monday + timedelta(days=6)
+
+    # топ за неделю: по числу выполненных привычек (habit_logs за текущую неделю)
+    week_rows = (
+        db.session.query(User, func.count(HabitLog.id).label('done'))
+        .join(HabitLog, HabitLog.user_id == User.id)
+        .filter(
+            HabitLog.is_done.is_(True),
+            HabitLog.log_date >= monday,
+            HabitLog.log_date <= sunday,
+        )
+        .group_by(User.id)
+        .order_by(func.count(HabitLog.id).desc())
+        .limit(10)
+        .all()
+    )
+    top_week = [{'user': u, 'value': done} for u, done in week_rows]
+
+    # топ за всё время: по опыту
+    all_rows = (
+        User.query
+        .filter(User.experience > 0)
+        .order_by(User.experience.desc())
+        .limit(10)
+        .all()
+    )
+    top_all = [{'user': u, 'value': u.experience} for u in all_rows]
+
+    return render_template(
+        'profile.html',
+        user=current_user,
+        top_week=top_week,
+        top_all=top_all,
+    )
 
 
 @main.route('/profile/avatar', methods=['POST'])

@@ -62,7 +62,10 @@
                 {{ habit_row(habit, false, day, offset) }}
             {% else %}
                 {% if not day.done %}
-                <p class="week-empty">На этот день привычек нет</p>
+                <div class="week-empty">
+                    <p>На этот день привычек нет<p>
+                </div>
+                
                 {% endif %}
             {% endfor %}
         </div>

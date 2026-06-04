@@ -123,9 +123,12 @@ main {
 .dock-button p {
     margin-top: -5px;
     font-size: 10px;
+    font-weight: 700;
     text-align: center;
-    color: white;
-    filter: drop-shadow(0 0 3px var(--dark-green)) drop-shadow(0 0 5px var(--dark-green));
+    color: var(--dark-green);
+    /* filter: drop-shadow(0 0 3px var(--dark-green)) drop-shadow(0 0 5px var(--dark-green)); */
+    filter: drop-shadow(0 0 3px var(--light-beige)) drop-shadow(0 0 5px var(--light-beige));
+
 }
 
 #dock a {
@@ -136,5 +139,45 @@ main {
 
 .dock-button img {
     width: 100%;
+}
+
+#auth-bar {
+
+}
+
+.auth-reg-menu {
+    display: flex;
+    gap: 15px;
+    padding: 0 15px;
+    background-color: var(--light-beige);
+    border-top: 2px solid var(--dark-green);
+    border-bottom: 2px solid var(--dark-green);
+}
+
+/* Бегущая строка-предупреждение */
+.marquee {
+    overflow: hidden;
+    white-space: nowrap;
+    background-color: #fdf7eb;
+    width: 100%;    
+}
+
+.marquee-track {
+    display: inline-flex;
+    /* линейная зацикленная прокрутка справа налево */
+    animation: marquee-scroll 10s linear infinite;
+}
+
+.marquee-track span {
+    color: red;
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+@keyframes marquee-scroll {
+    from { transform: translateX(0); }
+    /* -25% = ширина одной копии из 4: трек сдвигается ровно на одну копию,
+       картинка повторяется -> бесшовный цикл */
+    to   { transform: translateX(-25%); }
 }
 

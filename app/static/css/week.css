@@ -1,3 +1,8 @@
+.week-page {
+    max-width: 500px;
+    margin: auto;
+}
+
 .week-strip {
     display: flex;
     flex-direction: row;
@@ -52,7 +57,8 @@
 
 .week-done-title {
     text-align: center;
-    margin: 10px;
+    margin-bottom: 10px;
+    margin-top: -5px;
 }
 
 .week-done {
@@ -94,4 +100,11 @@
 
 .week-arrow img {
     width: 50px;
+}
+
+.week-empty {
+    padding: 10px;
+    background-color: var(--light-beige);
+    border-radius: 10px;
+    border: 2px solid var(--dark-green);
 }

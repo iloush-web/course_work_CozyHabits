@@ -1,0 +1,224 @@
+.profile-page {
+    max-width: 500px;
+    margin: 0 auto;
+    padding: 10px;
+}
+
+/* Шапка: аватар + имя + опыт */
+.profile-header {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    padding: 15px;
+    background-color: var(--light-beige);
+    border-radius: 10px;
+    border: 2px solid var(--dark-green);
+}
+
+.profile-avatar {
+    flex-shrink: 0;
+}
+
+/* Аватар — круглый, в зелёной рамке */
+.profile-avatar-img {
+    width: 110px !important;   /* перекрывает inline width:200px из шаблона */
+    height: 110px;
+    object-fit: cover;
+    border-radius: 5%;
+    border: 3px solid var(--dark-green);
+    display: block;
+}
+
+/* Заглушка, когда аватара нет */
+.profile-avatar-placeholder {
+    width: 110px;
+    height: 110px;
+    border-radius: 5%;
+    border: 3px solid var(--dark-green);
+    background-color: var(--light-green);
+}
+
+.profile-username {
+    color: var(--dark-green);
+    margin-bottom: 5px;
+}
+
+.profile-xp {
+    font-family: "Raleway-Italic";
+    color: var(--dark-green);
+    font-size: 1.1rem;
+}
+
+/* Свёрнутая форма смены аватара */
+.profile-avatar-details {
+    margin-top: 10px;
+}
+
+/* Маленькая кнопка-ссылка "Сменить фото" */
+.profile-avatar-toggle {
+    width: max-content;
+    font-size: 0.8rem;
+    color: var(--dark-green);
+    cursor: pointer;
+    list-style: none;          /* убрать стандартный треугольник */
+    text-decoration: underline;
+    text-underline-offset: 2px;
+    opacity: 0.7;
+}
+
+.profile-avatar-toggle::-webkit-details-marker {
+    display: none;             /* убрать треугольник в Safari/Chrome */
+}
+
+.profile-avatar-toggle:hover {
+    opacity: 1;
+}
+
+/* Форма загрузки/смены аватара */
+.profile-avatar-form {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 10px;
+    padding: 15px;
+    background-color: var(--light-beige);
+    border-radius: 10px;
+    border: 2px solid var(--dark-green);
+}
+
+.profile-avatar-form label {
+    color: var(--dark-green);
+    font-weight: 600;
+}
+
+.profile-avatar-form input[type="file"] {
+    width: 100%;
+    margin-top: 6px;
+    padding: 4px;
+    background-color: white;
+    color: #555;
+    font-size: 14px;
+    border: 1px solid var(--dark-green);
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.profile-avatar-form input[type="file"]::file-selector-button {
+    font-family: "Raleway";
+    font-size: var(--btn-font-size);
+    padding: 6px 14px;
+    margin-right: 10px;
+    background-color: var(--dark-green);
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.profile-avatar-form button[type="submit"] {
+    font-family: "Raleway-Italic";
+    font-size: var(--btn-font-size);
+    padding: 8px 20px;
+    width: max-content;
+    background-color: var(--dark-green);
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.profile-avatar-form button[type="submit"]:active {
+    outline: 2px solid #8eb67b;
+}
+
+/* Доп. информация */
+.profile-info {
+    margin-top: 15px;
+    padding: 15px;
+    background-color: var(--light-beige);
+    border-radius: 10px;
+    border: 2px solid var(--dark-green);
+}
+
+.profile-email {
+    color: var(--dark-green);
+    font-weight: 600;
+    margin-bottom: 5px;
+}
+
+.profile-joined {
+    font-family: "Raleway-Italic";
+    color: var(--dark-green);
+}
+
+/* ===== Топы пользователей ===== */
+.leaderboard-title {
+    color: var(--dark-green);
+    margin: 20px 0 10px;
+}
+
+.leaderboard {
+    list-style: none;
+    margin: 0;
+    padding: 10px;
+    background-color: var(--light-beige);
+    border-radius: 10px;
+    border: 2px solid var(--dark-green);
+}
+
+.leaderboard-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 8px 6px;
+    border-bottom: 1px solid var(--dark-green-transp);
+}
+
+.leaderboard-row:last-child {
+    border-bottom: none;
+}
+
+/* выделяем строку текущего пользователя */
+.leaderboard-row.is-me {
+    background-color: var(--light-green);
+    border-radius: 6px;
+    font-weight: 700;
+}
+
+.leaderboard-rank {
+    width: 24px;
+    text-align: center;
+    font-family: "Raleway-Italic";
+    font-weight: 700;
+    color: var(--dark-green);
+}
+
+/* Аватарка в топе — со скруглёнными краями */
+.leaderboard-avatar {
+    width: 48px;
+    height: 48px;
+    border-radius: 10px;
+    object-fit: cover;
+    border: 2px solid var(--dark-green);
+    flex-shrink: 0;
+}
+
+.leaderboard-avatar-placeholder {
+    display: inline-block;
+    background-color: var(--light-green);
+}
+
+.leaderboard-name {
+    flex: 1;
+    color: var(--dark-green);
+}
+
+.leaderboard-value {
+    font-weight: 600;
+    color: var(--dark-green);
+}
+
+.leaderboard-empty {
+    padding: 8px 6px;
+    color: var(--dark-green);
+}

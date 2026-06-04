@@ -1,46 +1,150 @@
-.rewards-shelf {
-    background-color: var(--light-beige);
-    border-radius: 10px;
-    border: 2px solid var(--dark-green);
+.rewards-page {
+    max-width: 500px;
+    margin: 0 auto;
+    padding: 10px;
 }
 
+/* Текущий опыт */
+.rewards-xp {
+    text-align: center;
+    font-family: "Raleway-Italic";
+    font-size: 1.4rem;
+    color: var(--dark-green);
+    margin-bottom: 15px;
+}
+
+.rewards-xp-value {
+    font-size: 2rem;
+    font-weight: 700;
+}
+
+/* Заголовки секций */
+.rewards-shelf-title,
+.rewards-xp-title {
+    color: var(--dark-green);
+    margin: 20px 0 10px;
+}
+
+/* Полка недельных наград и список наград за опыт */
+.rewards-shelf,
 .rewards-xp-list {
     background-color: var(--light-beige);
     border-radius: 10px;
     border: 2px solid var(--dark-green);
+    padding: 10px;
+}
+
+/* Полка — награды в ряд с переносом */
+.rewards-shelf {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    align-items: flex-start;
+}
+
+/* Список за опыт — колонкой */
+.rewards-xp-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+/* Карточка недельной награды */
+.shelf-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+    padding: 10px;
+    text-align: center;
+}
+
+.shelf-item-icon {
+    width: 80px;
+}
+
+.shelf-item-title {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--dark-green);
+}
+
+/* Карточка награды за опыт */
+.xp-reward {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px;
+    background-color: var(--light-green);
+    border-radius: 8px;
+}
+
+.xp-reward-icon {
+    width: 60px;
+}
+
+.xp-reward-title {
+    flex: 1;
+    font-weight: 600;
+    color: var(--dark-green);
+}
+
+.xp-reward-req {
+    font-family: "Raleway-Italic";
+    color: var(--dark-green);
+}
+
+/* Заголовки "Следующая награда:" внутри блоков */
+.title-next-week,
+.title-next-xp {
+    width: 100%;
+    font-size: 1rem;
+    color: var(--dark-green);
+    margin: 10px 0 5px;
+}
+
+/* Закрытая (ещё не полученная) награда */
+.is-locked {
+    filter: blur(2px) saturate(0);
+}
+
+/* Заглушки "пусто" */
+.rewards-shelf-empty,
+.rewards-xp-empty {
+    color: var(--dark-green);
+    padding: 10px;
+}
+
+/* Прогресс за неделю */
+.rewards-week {
+    margin-top: 25px;
+}
+
+.rewards-week-note {
+    text-align: center;
+    color: var(--dark-green);
+    margin-bottom: 10px;
 }
 
 .rewards-progress-bar-container {
+    background-color: var(--light-beige);
     border-radius: 10px;
     border: 2px solid var(--dark-green);
+    overflow: hidden;   /* чтобы заливка не вылезала за скруглённые углы */
+    padding: 3px;
 }
 
 .rewards-progress-bar {
     height: 30px;
     background-color: var(--dark-green);
-    border-radius: 5px;
+    border-radius: 7px;
+    transition: width 0.4s ease;   /* плавное заполнение */
 }
 
-.shelf-item {
-    display: flex;
-    align-items: center;
-    padding: 10px;
-}
-
-.is-locked {
-    filter: blur(2px) saturate(0);
-}
-
-.xp-reward {
-    display: flex;
-    align-items: center;
-    padding: 10px;
-}
-
-.title-next-week {
-    margin-left: 10px;
-}
-
-.title-next-xp {
-    margin-left: 10px;
+.rewards-progress-label {
+    display: block;
+    text-align: center;
+    font-weight: 600;
+    color: var(--dark-green);
+    margin-top: 8px;
 }

@@ -3,7 +3,7 @@
 {% block title %}Cozy Habits index{% endblock %}
 
 {% block content %}
-<h1>COZY HABITS</h1>
+<!-- <h1>COZY HABITS</h1> -->
 <p>Привычки</p>
 
 {% with messages = get_flashed_messages(with_categories=true) %}
@@ -45,7 +45,10 @@
         </div>
     </div>
     {% else %}
-    <p class="empty-state">Пока нет привычек. Создай первую!</p>
+    <p class="empty-state-text">Пока нет привычек.<br>Создай первую!</p>
+    <a class="empty-state-button" href="{{ url_for('main.habit_new') }}" class="habit-new-btn">Создать привычку</a>
+
+    </h3>
     {% endfor %}
 
 </div>

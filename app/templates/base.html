@@ -11,23 +11,31 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/week.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/rewards.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/stat.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/profile.css') }}">
 
 
 </head>
 <body>
 
     <header id="auth-bar">
-        <p style="color: red;">учебный проект! не вводите свои личные/персональные данные!!!</p>
-        {% if current_user.is_authenticated %}
-            <span>Привет, {{ current_user.username }}!</span>
-            {% if current_user.is_admin %}
-                <a href="{{ url_for('admin.dashboard') }}">Админ-панель</a>
-            {% endif %}
-            <a href="{{ url_for('auth.logout') }}">Выйти</a>
-        {% else %}
+        <div class="marquee">
+            <div class="marquee-track">
+                <span>УЧЕБНЫЙ ПРОЕКТ! НЕ ВВОДИТЕ СВОИ ЛИЧНЫЕ ДАННЫЕ!!!&nbsp;&nbsp;&nbsp;</span>
+                <span>УЧЕБНЫЙ ПРОЕКТ! НЕ ВВОДИТЕ СВОИ ЛИЧНЫЕ ДАННЫЕ!!!&nbsp;&nbsp;&nbsp;</span>
+                <span>УЧЕБНЫЙ ПРОЕКТ! НЕ ВВОДИТЕ СВОИ ЛИЧНЫЕ ДАННЫЕ!!!&nbsp;&nbsp;&nbsp;</span>
+                <span>УЧЕБНЫЙ ПРОЕКТ! НЕ ВВОДИТЕ СВОИ ЛИЧНЫЕ ДАННЫЕ!!!&nbsp;&nbsp;&nbsp;</span>
+            </div>
+        </div>
+
+        {% if not current_user.is_authenticated %}
+        <div class="auth-reg-menu">
             <a href="{{ url_for('auth.login') }}">Войти</a>
             <a href="{{ url_for('auth.register') }}">Регистрация</a>
+        </div>
         {% endif %}
+
+        {% block auth_menu %}{% endblock %}
+
     </header>
 
     <main>

@@ -7,6 +7,7 @@
 
     <!-- Текущий опыт -->
     <div class="rewards-xp">
+        <h2>Мой опыт</h2>
         <span class="rewards-xp-value">{{ user.experience }}</span> XP
     </div>
 
@@ -36,7 +37,7 @@
     </div>
 
     <!-- Награды за опыт -->
-    <h2 class="rewards-xp-title">Награды за опыт</h2>
+    <h1 class="rewards-xp-title">Награды за опыт</h1>
     <div class="rewards-xp-list">
         {% for reward in earned_xp_rewards %}
         <div class="xp-reward is-unlocked">
@@ -45,6 +46,8 @@
             <span class="xp-reward-title">{{ reward.title }}</span>
             <span class="xp-reward-req">{{ reward.required_xp }} XP</span>
         </div>
+        {% else %}
+        <p class="rewards-shelf-empty">Пока нет наград за опыт</p>
         {% endfor %}
 
         <h2 class="title-next-xp">Следующая награда за опыт:</h2>

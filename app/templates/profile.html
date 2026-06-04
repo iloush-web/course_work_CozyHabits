@@ -2,6 +2,16 @@
 
 {% block title %}Профиль{% endblock %}
 
+{% block auth_menu %}
+<div class="auth-reg-menu">
+    <p>Привет, {{ current_user.username }}!</p>
+    {% if current_user.is_admin %}
+        <a href="{{ url_for('admin.dashboard') }}">Админ-панель</a>
+    {% endif %}
+    <a href="{{ url_for('auth.logout') }}">Выйти</a>
+</div>
+{% endblock %}
+
 {% block content %}
 <section class="profile-page">
 
@@ -31,22 +41,68 @@
         </div>
     </div>
 
-    <!-- Загрузка / смена аватара -->
-    <form class="profile-avatar-form" method="POST"
-          action="{{ url_for('main.profile_avatar') }}" enctype="multipart/form-data">
-        <label>
-            {% if user.avatar_url %}Сменить аватар{% else %}Загрузить аватар{% endif %}
-            <input type="file" name="avatar"
-                   accept="image/png,image/jpeg,image/gif,image/webp" required>
-        </label>
-        <button type="submit">Сохранить</button>
-    </form>
+    <!-- Загрузка / смена аватара.
+         Если аватар уже есть — форма свёрнута под маленькую кнопку.
+         Если нет — открыта сразу (атрибут open). -->
+    <details class="profile-avatar-details" {% if not user.avatar_url %}open{% endif %}>
+        <summary class="profile-avatar-toggle">
+            {% if user.avatar_url %}Сменить фото{% else %}Загрузить аватар{% endif %}
+        </summary>
+
+        <form class="profile-avatar-form" method="POST"
+              action="{{ url_for('main.profile_avatar') }}" enctype="multipart/form-data">
+            <label>
+                Выберите изображение
+                <input type="file" name="avatar"
+                       accept="image/png,image/jpeg,image/gif,image/webp" required>
+            </label>
+            <button type="submit">Сохранить</button>
+        </form>
+    </details>
 
     <!-- Доп. информация -->
     <div class="profile-info">
         <p class="profile-email">{{ user.email }}</p>
         <p class="profile-joined">В CozyHabits с {{ user.created_at.strftime('%d.%m.%Y') }}</p>
     </div>
+
+    <!-- Топ за неделю (по выполненным привычкам) -->
+    <h2 class="leaderboard-title">Топ недели</h2>
+    <ol class="leaderboard">
+        {% for row in top_week %}
+        <li class="leaderboard-row {% if row.user.id == user.id %}is-me{% endif %}">
+            <span class="leaderboard-rank">{{ loop.index }}</span>
+            {% if row.user.avatar_url %}
+            <img class="leaderboard-avatar" src="{{ url_for('static', filename=row.user.avatar_url) }}" alt="">
+            {% else %}
+            <span class="leaderboard-avatar leaderboard-avatar-placeholder"></span>
+            {% endif %}
+            <span class="leaderboard-name">{{ row.user.username }}</span>
+            <span class="leaderboard-value">{{ row.value }} ✓</span>
+        </li>
+        {% else %}
+        <li class="leaderboard-empty">На этой неделе пока никто ничего не выполнил</li>
+        {% endfor %}
+    </ol>
+
+    <!-- Топ за всё время (по опыту) -->
+    <h2 class="leaderboard-title">Топ за всё время</h2>
+    <ol class="leaderboard">
+        {% for row in top_all %}
+        <li class="leaderboard-row {% if row.user.id == user.id %}is-me{% endif %}">
+            <span class="leaderboard-rank">{{ loop.index }}</span>
+            {% if row.user.avatar_url %}
+            <img class="leaderboard-avatar" src="{{ url_for('static', filename=row.user.avatar_url) }}" alt="">
+            {% else %}
+            <span class="leaderboard-avatar leaderboard-avatar-placeholder"></span>
+            {% endif %}
+            <span class="leaderboard-name">{{ row.user.username }}</span>
+            <span class="leaderboard-value">{{ row.value }} XP</span>
+        </li>
+        {% else %}
+        <li class="leaderboard-empty">Пока нет данных</li>
+        {% endfor %}
+    </ol>
 
 </section>
 {% endblock %}
