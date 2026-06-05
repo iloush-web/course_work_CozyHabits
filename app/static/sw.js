@@ -1,7 +1,7 @@
 // Service Worker для CozyHabits (PWA)
 // Подними версию (v2 -> v3), когда поменял фронтенд (CSS/JS/шаблоны/иконки):
 // это удалит старый кэш у пользователей и заставит подтянуть свежие файлы.
-const CACHE_VERSION = 'cozy-v3';
+const CACHE_VERSION = 'cozy-v4';
 
 // Установка — сразу активируем новый SW
 self.addEventListener('install', (event) => {
