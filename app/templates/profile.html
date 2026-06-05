@@ -69,9 +69,13 @@
 
     <!-- Push-уведомления -->
     <div class="profile-push">
-        <p class="profile-push-note">Напоминания о привычках по времени</p>
+        <p class="profile-push-note">Активация уведомлений</p>
+        <p>(Работает только при добавлении приложения на главный экран)</p>
+        <a href="{{ url_for('main.tutorial') }}">Как добавить приложение на гланвый экран?</a>
+
         <button id="push-enable-btn" class="profile-push-btn" type="button">Включить уведомления</button>
         <button id="push-test-btn" class="profile-push-btn" type="button">Тест</button>
+        
     </div>
 
     <!-- Топ за неделю (по выполненным привычкам) -->

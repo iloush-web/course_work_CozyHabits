@@ -1,0 +1,16 @@
+.tutorial {
+    max-width: 600px;
+    margin: auto;
+}
+
+.tutorial-info {
+
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    padding: 15px;
+    background-color: var(--light-beige);
+    border-radius: 10px;
+    border: 2px solid var(--dark-green);
+
+}

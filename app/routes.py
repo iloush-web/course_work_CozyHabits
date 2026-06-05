@@ -226,6 +226,12 @@ def push_test():
     )
     return {'sent': sent}
 
+@main.route('/tutorial')
+@login_required
+def tutorial():
+    return render_template('tutorial.html')
+    
+
 
 @main.route('/')
 @main.route('/habits')
