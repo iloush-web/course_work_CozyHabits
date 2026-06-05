@@ -7,18 +7,21 @@
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 20px;
-    justify-items: center;   /* центрируем карточки, когда их ширина ограничена */
 }
 
 .habit-box {
     padding: 10px;
     position: relative;
-    width: 100%;
-    max-width: 180px;        /* не даём карточке растягиваться → не растёт в высоту */
     background-color: var(--light-beige);
     border-radius: 10px;
     border: 2px solid var(--dark-green);
-    /* padding убрать отсюда */
+    display: flex;
+    flex-direction: column;
+}
+
+.habit-actions {
+    margin-top: auto;
+    padding-top: 8px;
 }
 
 /* Карточка без картинки: убираем верхний отступ у заголовка,
@@ -40,6 +43,8 @@
 
 .habit-img-frame {
     position: absolute;
+    top: 0;
+    left: 0;
     width: 100%;
     transform: scale(1.18);
     z-index: 1;
