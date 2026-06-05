@@ -24,6 +24,7 @@ def create_app(config_class=Config):
     os.makedirs(os.path.join(app.static_folder, 'uploads', 'habits'), exist_ok=True)
     os.makedirs(os.path.join(app.static_folder, 'uploads', 'rewards'), exist_ok=True)
     os.makedirs(os.path.join(app.static_folder, 'uploads', 'avatars'), exist_ok=True)
+    os.makedirs(os.path.join(app.static_folder, 'uploads', 'recommended'), exist_ok=True)
 
     with app.app_context():
         from app import models  # noqa: F401  register models with SQLAlchemy

@@ -1,14 +1,16 @@
 import calendar
+import csv
+import io
 from datetime import datetime, date, timedelta
 
-from flask import Blueprint, abort, current_app, flash, redirect, render_template, request, url_for
+from flask import Blueprint, Response, abort, current_app, flash, redirect, render_template, request, url_for
 from flask_login import current_user, login_required
 
 from sqlalchemy import func
 
 from app.extensions import db
-from app.models import User, Habit, HabitLog, Reward, UserReward, WeeklyReward, UserWeeklyReward, PushSubscription
-from app.uploads import save_habit_icon, delete_habit_icon, is_allowed_image, save_avatar, delete_avatar
+from app.models import User, Habit, HabitLog, Reward, UserReward, WeeklyReward, UserWeeklyReward, PushSubscription, RecommendedHabit
+from app.uploads import save_habit_icon, delete_habit_icon, is_allowed_image, save_avatar, delete_avatar, copy_to_habit_icon
 
 main = Blueprint('main', __name__)
 
@@ -230,7 +232,8 @@ def push_test():
 @login_required
 def habits():
     user_habits = Habit.query.filter_by(user_id=current_user.id, is_active=True).order_by(Habit.created_at.desc()).all()
-    return render_template('habits.html', habits=user_habits)
+    recommended = RecommendedHabit.query.order_by(RecommendedHabit.id).all()
+    return render_template('habits.html', habits=user_habits, recommended=recommended)
 
 
 @main.route('/week')
@@ -446,6 +449,48 @@ def profile_avatar():
     return redirect(url_for('main.profile'))
 
 
+def _csv_response(rows, header, filename):
+    """Собрать CSV-ответ. UTF-8 с BOM — чтобы Excel правильно открыл кириллицу."""
+    buf = io.StringIO()
+    writer = csv.writer(buf, delimiter=';')  # ; — Excel в рус. локали так делит на колонки
+    writer.writerow(header)
+    writer.writerows(rows)
+
+    data = '﻿' + buf.getvalue()  # BOM
+    return Response(
+        data,
+        mimetype='text/csv',
+        headers={'Content-Disposition': f'attachment; filename={filename}'},
+    )
+
+
+@main.route('/profile/export.csv')
+@login_required
+def profile_export_csv():
+    # журнал выполнения привычек текущего пользователя
+    logs = (
+        db.session.query(HabitLog, Habit.title)
+        .join(Habit, Habit.id == HabitLog.habit_id)
+        .filter(HabitLog.user_id == current_user.id)
+        .order_by(HabitLog.log_date.desc())
+        .all()
+    )
+    rows = [
+        [
+            log.log_date.strftime('%d.%m.%Y'),
+            title,
+            'Да' if log.is_done else 'Нет',
+            log.note or '',
+        ]
+        for log, title in logs
+    ]
+    return _csv_response(
+        rows,
+        ['Дата', 'Привычка', 'Выполнено', 'Заметка'],
+        'cozyhabits_statistika.csv',
+    )
+
+
 @main.route('/statistics')
 @login_required
 def statistics():
@@ -521,7 +566,13 @@ def habit_new():
                 flash(err, 'error')
             return render_template('habit_form.html', mode='new', habit=data, form_action=url_for('main.habit_new'))
 
-        icon_path = save_habit_icon(icon_file) if icon_file else None
+        if icon_file:
+            # юзер загрузил свою картинку
+            icon_path = save_habit_icon(icon_file)
+        else:
+            # картинка из шаблона рекомендации (если создаём из рекомендации)
+            rec_icon = request.form.get('rec_icon') or None
+            icon_path = copy_to_habit_icon(rec_icon) if rec_icon else None
 
         habit = Habit(user_id=current_user.id, icon=icon_path, **data)
         db.session.add(habit)
@@ -529,7 +580,18 @@ def habit_new():
         flash('Привычка создана.', 'success')
         return redirect(url_for('main.habits'))
 
-    return render_template('habit_form.html', mode='new', habit=None, form_action=url_for('main.habit_new'))
+    # GET: предзаполнение из рекомендованной привычки (?from=<id>)
+    prefill = None
+    rec_id = request.args.get('from', type=int)
+    if rec_id:
+        rec = RecommendedHabit.query.get_or_404(rec_id)
+        prefill = {
+            'title': rec.title,
+            'description': rec.description,
+            'icon': rec.icon,  # путь к картинке шаблона (для превью + копирования)
+        }
+
+    return render_template('habit_form.html', mode='new', habit=prefill, form_action=url_for('main.habit_new'))
 
 
 @main.route('/habits/<int:habit_id>/edit', methods=['GET', 'POST'])

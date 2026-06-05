@@ -71,14 +71,18 @@
 
         <fieldset>
             <legend>Иконка</legend>
-            {% if h and h.icon %}
+            {% if h and h.icon and h.icon != 'star' %}
                 <div class="icon-preview">
                     <p>Текущая:</p>
                     <img src="{{ url_for('static', filename=h.icon) }}" alt="" style="max-width:80px">
                 </div>
+                {# при создании из рекомендации — передаём путь шаблона, чтобы скопировать его картинку #}
+                {% if mode == 'new' %}
+                    <input type="hidden" name="rec_icon" value="{{ h.icon }}">
+                {% endif %}
             {% endif %}
             <label>
-                {% if h and h.icon %}Заменить картинку{% else %}Загрузить картинку{% endif %}
+                {% if h and h.icon and h.icon != 'star' %}Заменить картинку{% else %}Загрузить картинку{% endif %}
                 <input type="file" name="icon" accept="image/png,image/jpeg,image/gif,image/webp">
             </label>
         </fieldset>

@@ -64,6 +64,7 @@
     <div class="profile-info">
         <p class="profile-email">{{ user.email }}</p>
         <p class="profile-joined">В CozyHabits с {{ user.created_at.strftime('%d.%m.%Y') }}</p>
+        <a class="profile-export-btn" href="{{ url_for('main.profile_export_csv') }}">Скачать статистику (CSV)</a>
     </div>
 
     <!-- Push-уведомления -->
