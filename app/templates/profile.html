@@ -64,6 +64,18 @@
     <div class="profile-info">
         <p class="profile-email">{{ user.email }}</p>
         <p class="profile-joined">В CozyHabits с {{ user.created_at.strftime('%d.%m.%Y') }}</p>
+        <a class="profile-export-btn" href="{{ url_for('main.profile_export_csv') }}">Скачать статистику (CSV)</a>
+    </div>
+
+    <!-- Push-уведомления -->
+    <div class="profile-push">
+        <p class="profile-push-note">Активация уведомлений</p>
+        <p>(Работает только при добавлении приложения на главный экран)</p>
+        <a href="{{ url_for('main.tutorial') }}">Как добавить приложение на главный экран?</a>
+        <br>
+        <button id="push-enable-btn" class="profile-push-btn" type="button">Включить уведомления</button>
+        <button id="push-test-btn" class="profile-push-btn" type="button">Тест</button>
+        
     </div>
 
     <!-- Топ за неделю (по выполненным привычкам) -->

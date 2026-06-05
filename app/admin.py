@@ -1,9 +1,16 @@
-from flask import Blueprint, flash, redirect, render_template, request, url_for
+import csv
+import io
+
+from flask import Blueprint, Response, flash, redirect, render_template, request, url_for
+from sqlalchemy import func
 
 from app.decorators import admin_required
 from app.extensions import db
-from app.models import Reward, WeeklyReward, UserReward, UserWeeklyReward
-from app.uploads import save_reward_icon, delete_reward_icon, is_allowed_image
+from app.models import User, Habit, HabitLog, Reward, WeeklyReward, UserReward, UserWeeklyReward, RecommendedHabit
+from app.uploads import (
+    save_reward_icon, delete_reward_icon, is_allowed_image,
+    save_recommended_icon, delete_recommended_icon,
+)
 
 admin = Blueprint('admin', __name__, url_prefix='/admin')
 
@@ -13,7 +20,13 @@ admin = Blueprint('admin', __name__, url_prefix='/admin')
 def dashboard():
     xp_rewards = Reward.query.order_by(Reward.required_xp).all()
     weekly_rewards = WeeklyReward.query.order_by(WeeklyReward.position).all()
-    return render_template('admin.html', xp_rewards=xp_rewards, weekly_rewards=weekly_rewards)
+    recommended = RecommendedHabit.query.order_by(RecommendedHabit.id).all()
+    return render_template(
+        'admin.html',
+        xp_rewards=xp_rewards,
+        weekly_rewards=weekly_rewards,
+        recommended=recommended,
+    )
 
 
 def _validate_icon(file_storage, errors):
@@ -111,3 +124,89 @@ def weekly_delete(weekly_id):
     delete_reward_icon(icon)
     flash('Недельная награда удалена.', 'info')
     return redirect(url_for('admin.dashboard'))
+
+
+# ----- Рекомендованные привычки -----
+
+@admin.route('/recommended/new', methods=['POST'])
+@admin_required
+def recommended_new():
+    title = (request.form.get('title') or '').strip()
+    description = (request.form.get('description') or '').strip() or None
+
+    errors = []
+    if not title:
+        errors.append('Укажите название привычки.')
+    icon_file = _validate_icon(request.files.get('icon'), errors)
+
+    if errors:
+        for e in errors:
+            flash(e, 'error')
+        return redirect(url_for('admin.dashboard'))
+
+    db.session.add(RecommendedHabit(
+        title=title,
+        description=description,
+        icon=save_recommended_icon(icon_file),
+    ))
+    db.session.commit()
+    flash('Рекомендованная привычка добавлена.', 'success')
+    return redirect(url_for('admin.dashboard'))
+
+
+@admin.route('/recommended/<int:rec_id>/delete', methods=['POST'])
+@admin_required
+def recommended_delete(rec_id):
+    rec = RecommendedHabit.query.get_or_404(rec_id)
+    icon = rec.icon
+    db.session.delete(rec)
+    db.session.commit()
+    delete_recommended_icon(icon)
+    flash('Рекомендованная привычка удалена.', 'info')
+    return redirect(url_for('admin.dashboard'))
+
+
+# ----- Экспорт сводки по пользователям (CSV) -----
+
+@admin.route('/export/users.csv')
+@admin_required
+def export_users_csv():
+    # счётчики привычек и выполнений по каждому пользователю
+    habits_count = dict(
+        db.session.query(Habit.user_id, func.count(Habit.id))
+        .group_by(Habit.user_id).all()
+    )
+    logs_count = dict(
+        db.session.query(HabitLog.user_id, func.count(HabitLog.id))
+        .filter(HabitLog.is_done.is_(True))
+        .group_by(HabitLog.user_id).all()
+    )
+
+    rows = []
+    for u in User.query.order_by(User.id).all():
+        rows.append([
+            u.id,
+            u.email,
+            u.username,
+            u.experience,
+            u.days_streak,
+            habits_count.get(u.id, 0),
+            logs_count.get(u.id, 0),
+            'да' if u.is_admin else 'нет',
+            u.created_at.strftime('%d.%m.%Y'),
+        ])
+
+    buf = io.StringIO()
+    writer = csv.writer(buf, delimiter=';')
+    writer.writerow([
+        'ID', 'Email', 'Имя', 'Опыт', 'Серия (дней)',
+        'Привычек', 'Выполнений', 'Админ', 'Регистрация',
+    ])
+    writer.writerows(rows)
+
+    data = '﻿' + buf.getvalue()  # BOM для Excel
+    return Response(
+        data,
+        mimetype='text/csv',
+        headers={'Content-Disposition': 'attachment; filename=cozyhabits_users.csv'},
+    )

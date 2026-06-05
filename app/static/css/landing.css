@@ -1,0 +1,161 @@
+/* ===== Лендинг ===== */
+.landing {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 10px;
+}
+
+/* Герой */
+.landing-hero {
+    text-align: center;
+    padding: 30px 10px;
+}
+
+.landing-logo {
+    max-width: 260px;
+    width: 80%;
+}
+
+.landing-tagline {
+
+    padding: 15px;
+    background-color: var(--light-beige);
+    border-radius: 10px;
+    border: 2px solid var(--dark-green);
+
+
+    margin: 15px 0 25px;
+    color: var(--dark-green);
+    font-size: 1.1rem;
+}
+
+.landing-cta {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+}
+
+.landing-btn {
+    font-family: "Raleway-Italic";
+    font-size: var(--btn-font-size);
+    padding: 10px 24px;
+    border-radius: 5px;
+    text-decoration: none;
+}
+
+.landing-btn-primary {
+    background-color: var(--dark-green);
+    color: white;
+}
+
+.landing-btn-secondary {
+    background-color: var(--light-beige);
+    color: var(--dark-green);
+    border: 2px solid var(--dark-green);
+}
+
+.landing-btn:active {
+    outline: 2px solid #8eb67b;
+}
+
+/* Заголовки секций */
+.landing-section-title {
+    text-align: center;
+    color: var(--dark-green);
+    margin: 35px 0 20px;
+}
+
+/* Возможности — горизонтальная карусель во всю ширину экрана.
+   Отрицательные поля выводят карусель за паддинг .landing (10px),
+   а свой padding-inline возвращает отступ карточкам от краёв. */
+.landing-features {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    
+
+    gap: 15px;
+
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+
+    /* во всю ширину окна без 100vw (чтобы не появлялся горизонтальный скролл
+       страницы). max-width: 100vw + центрирование margin auto убраны;
+       растягиваем за паддинг .landing и main отрицательными полями. */
+    margin-left: calc(-50vw + 50%);
+    margin-right: calc(-50vw + 50%);
+    padding: 0 20px 20px;
+
+    scrollbar-width: none;         /* убрать полосу прокрутки (Firefox) */
+}
+
+.landing-features::-webkit-scrollbar {
+    display: none;                 /* убрать полосу прокрутки (WebKit) */
+}
+
+.landing-feature {
+    /* фикс. ширина: на телефоне видно ~1.5 карточки, на десктопе — несколько */
+    flex: 0 0 200px;
+    scroll-snap-align: center;
+    padding: 15px;
+    background-color: var(--light-beige);
+    border-radius: 10px;
+    border: 2px solid var(--dark-green);
+}
+
+.landing-feature-title {
+    color: var(--dark-green);
+    margin-bottom: 6px;
+}
+
+.landing-feature-text {
+    font-size: 0.9rem;
+    color: var(--dark-green);
+}
+
+/* Горизонтальная карусель привычек на лендинге — во всю ширину */
+.landing #all-habits {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+
+    
+    gap: 15px;
+
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+
+    /* во всю ширину окна без 100vw (см. комментарий выше) */
+    margin-left: calc(-50vw + 50%);
+    margin-right: calc(-50vw + 50%);
+    padding: 0 20px 20px;
+
+    /* перебиваем grid-сетку из habits.css */
+    grid-template-columns: none;
+    max-width: none;
+
+    scrollbar-width: none;
+}
+
+.landing #all-habits::-webkit-scrollbar {
+    display: none;
+}
+
+.landing #all-habits .habit-box {
+    flex: 0 0 160px;
+    scroll-snap-align: center;
+}
+
+/* Финальный призыв */
+.landing-final {
+    text-align: center;
+    margin: 40px 0;
+}
+
+.landing-final-text {
+    color: var(--dark-green);
+    font-size: 1.2rem;
+    margin-bottom: 15px;
+}

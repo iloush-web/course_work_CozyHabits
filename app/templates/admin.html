@@ -17,6 +17,11 @@
         {% endif %}
     {% endwith %}
 
+    <!-- Экспорт сводки по пользователям -->
+    <div class="admin-block">
+        <a class="admin-export-btn" href="{{ url_for('admin.export_users_csv') }}">Экспорт пользователей (CSV)</a>
+    </div>
+
     <!-- ===== Награды за опыт ===== -->
     <div class="admin-block">
         <h2 class="admin-block-title">Награды за опыт (XP)</h2>
@@ -85,6 +90,45 @@
             </div>
             {% else %}
             <p class="admin-empty">Недельных наград пока нет</p>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- ===== Рекомендованные привычки ===== -->
+    <div class="admin-block">
+        <h2 class="admin-block-title">Рекомендованные привычки</h2>
+
+        <form class="admin-form" method="POST"
+              action="{{ url_for('admin.recommended_new') }}" enctype="multipart/form-data">
+            <label>
+                Название
+                <input type="text" name="title" required maxlength="120">
+            </label>
+            <label>
+                Описание
+                <textarea name="description" rows="2"></textarea>
+            </label>
+            <label>
+                Картинка
+                <input type="file" name="icon" accept="image/png,image/jpeg,image/gif,image/webp" required>
+            </label>
+            <button type="submit">Добавить рекомендацию</button>
+        </form>
+
+        <div class="admin-list">
+            {% for rec in recommended %}
+            <div class="admin-item">
+                {% if rec.icon and rec.icon != 'star' %}
+                <img class="admin-item-icon" src="{{ url_for('static', filename=rec.icon) }}" alt="">
+                {% endif %}
+                <span class="admin-item-title">{{ rec.title }}</span>
+                <form method="POST" action="{{ url_for('admin.recommended_delete', rec_id=rec.id) }}"
+                      onsubmit="return confirm('Удалить рекомендацию «{{ rec.title }}»?');">
+                    <button type="submit" class="admin-delete-btn">Удалить</button>
+                </form>
+            </div>
+            {% else %}
+            <p class="admin-empty">Рекомендаций пока нет</p>
             {% endfor %}
         </div>
     </div>

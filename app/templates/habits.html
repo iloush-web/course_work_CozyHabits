@@ -8,7 +8,7 @@
 
 
 <!-- <h1>COZY HABITS</h1> -->
-<p>Привычки</p>
+<h1>Привычки</h1>
 
 {% with messages = get_flashed_messages(with_categories=true) %}
     {% if messages %}
@@ -56,6 +56,31 @@
     {% endfor %}
 
 </div>
+
+{% if recommended %}
+<h1 class="recommended-title">Рекомендуем попробовать</h1>
+<div id="all-habits">
+    {% for rec in recommended %}
+    {% set has_icon = rec.icon and rec.icon != 'star' %}
+    <div class="habit-box recommended-box {% if not has_icon %}no-icon{% endif %}">
+        {% if has_icon %}
+        <div class="habit-img-wrapper">
+            <img class="habit-img-frame" src="{{ url_for('static', filename='images/frames/frame_1.png') }}" alt="">
+            <img class="habit-img" src="{{ url_for('static', filename=rec.icon) }}" alt="">
+        </div>
+        {% endif %}
+        <h1 class="habit-text">{{ rec.title }}</h1>
+        {% if rec.description %}
+        <p class="time-text">{{ rec.description }}</p>
+        {% endif %}
+
+        <div class="habit-actions">
+            <a class="recommended-add-btn" href="{{ url_for('main.habit_new', from=rec.id) }}">+ Добавить</a>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endif %}
 
 </section>
 

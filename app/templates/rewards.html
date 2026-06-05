@@ -16,7 +16,7 @@
     <div class="rewards-shelf">
         {% for reward in shelf %}
         <div class="shelf-item" title="{{ reward.title }}">
-            <img style="width: 80px;" class="shelf-item-icon" src="{{ url_for('static', filename=reward.icon_url) }}"
+            <img class="shelf-item-icon" src="{{ url_for('static', filename=reward.icon_url) }}"
                 alt="">
             <span class="shelf-item-title">{{ reward.title }}</span>
         </div>

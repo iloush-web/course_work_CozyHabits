@@ -26,10 +26,32 @@ services:
       DATABASE_URL: postgresql://${POSTGRES_USER:-cozy}:${POSTGRES_PASSWORD:-cozy_pass}@db:5432/${POSTGRES_DB:-cozyhabits}
       SECRET_KEY: ${SECRET_KEY:-change-me-in-prod}
       FLASK_DEBUG: "0"
+      TZ: ${TZ:-Europe/Moscow}
+      VAPID_PUBLIC_KEY: ${VAPID_PUBLIC_KEY:-}
+      VAPID_PRIVATE_KEY: ${VAPID_PRIVATE_KEY:-}
+      VAPID_CLAIM_EMAIL: ${VAPID_CLAIM_EMAIL:-mailto:admin@example.com}
     volumes:
       # загруженные картинки (аватары, иконки) переживают пересоздание контейнера
       - uploads:/app/app/static/uploads
     # порт наружу не пробрасываем — доступ только через nginx
+
+  # Планировщик напоминаний: тот же образ, но запускает scheduler.py
+  scheduler:
+    build:
+      context: .
+      dockerfile: app/Dockerfile
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgresql://${POSTGRES_USER:-cozy}:${POSTGRES_PASSWORD:-cozy_pass}@db:5432/${POSTGRES_DB:-cozyhabits}
+      SECRET_KEY: ${SECRET_KEY:-change-me-in-prod}
+      TZ: ${TZ:-Europe/Moscow}
+      VAPID_PUBLIC_KEY: ${VAPID_PUBLIC_KEY:-}
+      VAPID_PRIVATE_KEY: ${VAPID_PRIVATE_KEY:-}
+      VAPID_CLAIM_EMAIL: ${VAPID_CLAIM_EMAIL:-mailto:admin@example.com}
+    command: ["python", "scheduler.py"]
 
   nginx:
     image: nginx:1.27-alpine

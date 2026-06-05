@@ -1,14 +1,16 @@
 import calendar
+import csv
+import io
 from datetime import datetime, date, timedelta
 
-from flask import Blueprint, abort, flash, redirect, render_template, request, url_for
+from flask import Blueprint, Response, abort, current_app, flash, redirect, render_template, request, url_for
 from flask_login import current_user, login_required
 
 from sqlalchemy import func
 
 from app.extensions import db
-from app.models import User, Habit, HabitLog, Reward, UserReward, WeeklyReward, UserWeeklyReward
-from app.uploads import save_habit_icon, delete_habit_icon, is_allowed_image, save_avatar, delete_avatar
+from app.models import User, Habit, HabitLog, Reward, UserReward, WeeklyReward, UserWeeklyReward, PushSubscription, RecommendedHabit
+from app.uploads import save_habit_icon, delete_habit_icon, is_allowed_image, save_avatar, delete_avatar, copy_to_habit_icon
 
 main = Blueprint('main', __name__)
 
@@ -148,12 +150,103 @@ def _get_own_habit_or_404(habit_id: int) -> Habit:
     return habit
 
 
+@main.route('/sw.js')
+def service_worker():
+    # отдаём SW с корня, чтобы его scope покрывал весь сайт
+    resp = current_app.send_static_file('sw.js')
+    resp.headers['Service-Worker-Allowed'] = '/'
+    resp.headers['Cache-Control'] = 'no-cache'
+    return resp
+
+
+@main.route('/manifest.json')
+def manifest():
+    return current_app.send_static_file('manifest.json')
+
+# ===== Push-уведомления =====
+
+@main.route('/push/public-key')
+@login_required
+def push_public_key():
+    # фронту нужен публичный VAPID-ключ, чтобы оформить подписку
+    return {'publicKey': current_app.config['VAPID_PUBLIC_KEY']}
+
+
+@main.route('/push/subscribe', methods=['POST'])
+@login_required
+def push_subscribe():
+    data = request.get_json(silent=True) or {}
+    endpoint = data.get('endpoint')
+    keys = data.get('keys') or {}
+    p256dh = keys.get('p256dh')
+    auth = keys.get('auth')
+
+    if not endpoint or not p256dh or not auth:
+        return {'error': 'invalid subscription'}, 400
+
+    existing = PushSubscription.query.filter_by(endpoint=endpoint).first()
+    if existing:
+        # эта подписка уже есть — перепривяжем к текущему пользователю на всякий случай
+        existing.user_id = current_user.id
+        existing.p256dh = p256dh
+        existing.auth = auth
+    else:
+        db.session.add(PushSubscription(
+            user_id=current_user.id,
+            endpoint=endpoint, p256dh=p256dh, auth=auth,
+        ))
+    db.session.commit()
+    return {'ok': True}
+
+
+@main.route('/push/unsubscribe', methods=['POST'])
+@login_required
+def push_unsubscribe():
+    data = request.get_json(silent=True) or {}
+    endpoint = data.get('endpoint')
+    if endpoint:
+        PushSubscription.query.filter_by(
+            endpoint=endpoint, user_id=current_user.id
+        ).delete()
+        db.session.commit()
+    return {'ok': True}
+
+
+@main.route('/push/test', methods=['POST'])
+@login_required
+def push_test():
+    # ручная проверка: отправить себе тестовый пуш
+    from app.push import send_push_to_user
+    sent = send_push_to_user(
+        current_user.id,
+        'CozyHabits',
+        'Тестовое уведомление работает! 🌿',
+        url=url_for('main.habits'),
+    )
+    return {'sent': sent}
+
+@main.route('/tutorial')
+@login_required
+def tutorial():
+    return render_template('tutorial.html')
+    
+
+
 @main.route('/')
+def index():
+    # Лендинг для гостей; авторизованных сразу ведём к их привычкам
+    if current_user.is_authenticated:
+        return redirect(url_for('main.habits'))
+    recommended = RecommendedHabit.query.order_by(RecommendedHabit.id).all()
+    return render_template('landing.html', recommended=recommended)
+
+
 @main.route('/habits')
 @login_required
 def habits():
     user_habits = Habit.query.filter_by(user_id=current_user.id, is_active=True).order_by(Habit.created_at.desc()).all()
-    return render_template('habits.html', habits=user_habits)
+    recommended = RecommendedHabit.query.order_by(RecommendedHabit.id).all()
+    return render_template('habits.html', habits=user_habits, recommended=recommended)
 
 
 @main.route('/week')
@@ -369,6 +462,48 @@ def profile_avatar():
     return redirect(url_for('main.profile'))
 
 
+def _csv_response(rows, header, filename):
+    """Собрать CSV-ответ. UTF-8 с BOM — чтобы Excel правильно открыл кириллицу."""
+    buf = io.StringIO()
+    writer = csv.writer(buf, delimiter=';')  # ; — Excel в рус. локали так делит на колонки
+    writer.writerow(header)
+    writer.writerows(rows)
+
+    data = '﻿' + buf.getvalue()  # BOM
+    return Response(
+        data,
+        mimetype='text/csv',
+        headers={'Content-Disposition': f'attachment; filename={filename}'},
+    )
+
+
+@main.route('/profile/export.csv')
+@login_required
+def profile_export_csv():
+    # журнал выполнения привычек текущего пользователя
+    logs = (
+        db.session.query(HabitLog, Habit.title)
+        .join(Habit, Habit.id == HabitLog.habit_id)
+        .filter(HabitLog.user_id == current_user.id)
+        .order_by(HabitLog.log_date.desc())
+        .all()
+    )
+    rows = [
+        [
+            log.log_date.strftime('%d.%m.%Y'),
+            title,
+            'Да' if log.is_done else 'Нет',
+            log.note or '',
+        ]
+        for log, title in logs
+    ]
+    return _csv_response(
+        rows,
+        ['Дата', 'Привычка', 'Выполнено', 'Заметка'],
+        'cozyhabits_statistika.csv',
+    )
+
+
 @main.route('/statistics')
 @login_required
 def statistics():
@@ -444,7 +579,13 @@ def habit_new():
                 flash(err, 'error')
             return render_template('habit_form.html', mode='new', habit=data, form_action=url_for('main.habit_new'))
 
-        icon_path = save_habit_icon(icon_file) if icon_file else None
+        if icon_file:
+            # юзер загрузил свою картинку
+            icon_path = save_habit_icon(icon_file)
+        else:
+            # картинка из шаблона рекомендации (если создаём из рекомендации)
+            rec_icon = request.form.get('rec_icon') or None
+            icon_path = copy_to_habit_icon(rec_icon) if rec_icon else None
 
         habit = Habit(user_id=current_user.id, icon=icon_path, **data)
         db.session.add(habit)
@@ -452,7 +593,18 @@ def habit_new():
         flash('Привычка создана.', 'success')
         return redirect(url_for('main.habits'))
 
-    return render_template('habit_form.html', mode='new', habit=None, form_action=url_for('main.habit_new'))
+    # GET: предзаполнение из рекомендованной привычки (?from=<id>)
+    prefill = None
+    rec_id = request.args.get('from', type=int)
+    if rec_id:
+        rec = RecommendedHabit.query.get_or_404(rec_id)
+        prefill = {
+            'title': rec.title,
+            'description': rec.description,
+            'icon': rec.icon,  # путь к картинке шаблона (для превью + копирования)
+        }
+
+    return render_template('habit_form.html', mode='new', habit=prefill, form_action=url_for('main.habit_new'))
 
 
 @main.route('/habits/<int:habit_id>/edit', methods=['GET', 'POST'])

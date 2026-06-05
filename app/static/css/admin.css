@@ -4,6 +4,21 @@
     padding: 10px;
 }
 
+.admin-export-btn {
+    display: inline-block;
+    font-family: "Raleway-Italic";
+    font-size: var(--btn-font-size);
+    padding: 8px 18px;
+    background-color: var(--dark-green);
+    color: white;
+    text-decoration: none;
+    border-radius: 5px;
+}
+
+.admin-export-btn:active {
+    outline: 2px solid #8eb67b;
+}
+
 .admin-title {
     color: var(--dark-green);
     text-align: center;

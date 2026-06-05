@@ -1,4 +1,5 @@
 import os
+import shutil
 import uuid
 
 from flask import current_app
@@ -6,9 +7,10 @@ from PIL import Image, ImageOps
 from werkzeug.utils import secure_filename
 
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif', 'webp'}
-HABIT_ICONS_SUBDIR = 'uploads/habits'      # relative to /static
-REWARD_ICONS_SUBDIR = 'uploads/rewards'    # relative to /static
-AVATARS_SUBDIR = 'uploads/avatars'         # relative to /static
+HABIT_ICONS_SUBDIR = 'uploads/habits'              # relative to /static
+REWARD_ICONS_SUBDIR = 'uploads/rewards'            # relative to /static
+AVATARS_SUBDIR = 'uploads/avatars'                 # relative to /static
+RECOMMENDED_ICONS_SUBDIR = 'uploads/recommended'   # relative to /static
 MAX_ICON_SIZE = 800  # px (square)
 
 
@@ -103,3 +105,38 @@ def save_avatar(file_storage) -> str | None:
 
 def delete_avatar(rel_path: str | None) -> None:
     _delete_image(rel_path, AVATARS_SUBDIR)
+
+
+def save_recommended_icon(file_storage) -> str | None:
+    return _save_image(file_storage, RECOMMENDED_ICONS_SUBDIR)
+
+
+def delete_recommended_icon(rel_path: str | None) -> None:
+    _delete_image(rel_path, RECOMMENDED_ICONS_SUBDIR)
+
+
+def copy_to_habit_icon(rel_path: str | None) -> str | None:
+    """Скопировать картинку шаблона рекомендации в папку привычек как личную копию.
+
+    Нужно, чтобы у привычки юзера была своя картинка — удаление рекомендации
+    или самой привычки не затрагивает чужие файлы.
+    """
+    if not rel_path:
+        return None
+
+    src = os.path.join(current_app.static_folder, *rel_path.split('/'))
+    if not os.path.isfile(src):
+        return None
+
+    ext = _ext(rel_path) or 'png'
+    name = secure_filename(f'{uuid.uuid4().hex}.{ext}')
+    abs_dir = os.path.join(current_app.static_folder, *HABIT_ICONS_SUBDIR.split('/'))
+    os.makedirs(abs_dir, exist_ok=True)
+    dst = os.path.join(abs_dir, name)
+
+    try:
+        shutil.copyfile(src, dst)
+    except OSError:
+        return None
+
+    return f'{HABIT_ICONS_SUBDIR}/{name}'
