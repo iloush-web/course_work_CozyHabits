@@ -6,6 +6,9 @@
     <meta name="theme-color" content="#fff3e2">
     <title>{% block title %}Cozy Habbits{% endblock %}</title>
 
+    <!-- Иконка во вкладке браузера (favicon) -->
+    <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='images/icons/favicon.ico') }}">
+
     <!-- PWA -->
     <link rel="manifest" href="{{ url_for('main.manifest') }}">
     <meta name="apple-mobile-web-app-capable" content="yes">
