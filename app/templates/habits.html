@@ -8,7 +8,7 @@
 
 
 <!-- <h1>COZY HABITS</h1> -->
-<p>Привычки</p>
+<h1>Привычки</h1>
 
 {% with messages = get_flashed_messages(with_categories=true) %}
     {% if messages %}
@@ -58,7 +58,7 @@
 </div>
 
 {% if recommended %}
-<h2 class="recommended-title">Рекомендуем попробовать</h2>
+<h1 class="recommended-title">Рекомендуем попробовать</h1>
 <div id="all-habits">
     {% for rec in recommended %}
     {% set has_icon = rec.icon and rec.icon != 'star' %}

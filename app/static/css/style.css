@@ -47,6 +47,7 @@ body {
     font-family: "Raleway";
     line-height: 1.4;
     font-size: 18px;
+    overflow-x: clip;   /* убираем горизонтальный скролл от каруселей; clip (не hidden) не плодит лишнюю дорожку вертикального скролла */
 }
 
 p {

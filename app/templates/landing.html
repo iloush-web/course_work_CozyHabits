@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+
+{% block title %}CozyHabits — уютный трекер привычек{% endblock %}
+
+{% block content %}
+<section class="landing">
+
+    <!-- Герой -->
+    <div class="landing-hero">
+        <img class="landing-logo" src="{{ url_for('static', filename='images/cozyhabits_text.gif') }}" alt="CozyHabits">
+        <p class="landing-tagline">Уютный трекер привычек,<br>который помогает быть в ресурсе каждый день</p>
+        <div class="landing-cta">
+            <a class="landing-btn landing-btn-primary" href="{{ url_for('auth.register') }}">Начать</a>
+            <a class="landing-btn landing-btn-secondary" href="{{ url_for('auth.login') }}">Войти</a>
+        </div>
+    </div>
+
+    <!-- Возможности -->
+    <h2 class="landing-section-title">Что умеет CozyHabits?</h2>
+    <div class="landing-features">
+        <div class="landing-feature">
+            <h3 class="landing-feature-title">Привычки</h3>
+            <p class="landing-feature-text">Создавайте привычки, задавайте частоту, дни недели и время напоминания.</p>
+        </div>
+        <div class="landing-feature">
+            <h3 class="landing-feature-title">Неделя</h3>
+            <p class="landing-feature-text">Отмечайте выполнение по дням и следите за прогрессом недели.</p>
+        </div>
+        <div class="landing-feature">
+            <h3 class="landing-feature-title">Статистика</h3>
+            <p class="landing-feature-text">Календарь выполнения покажет, в какие дни всё получилось.</p>
+        </div>
+        <div class="landing-feature">
+            <h3 class="landing-feature-title">Награды</h3>
+            <p class="landing-feature-text">Получайте опыт и открывайте награды за регулярность.</p>
+        </div>
+        <div class="landing-feature">
+            <h3 class="landing-feature-title">Напоминания</h3>
+            <p class="landing-feature-text">Push-уведомления напомнят о привычке в нужное время.</p>
+        </div>
+        <div class="landing-feature">
+            <h3 class="landing-feature-title">На телефоне</h3>
+            <p class="landing-feature-text">Добавьте приложение на главный экран и пользуйтесь как обычным.</p>
+        </div>
+    </div>
+
+    <!-- Каталог рекомендаций -->
+    {% if recommended %}
+    <h2 class="landing-section-title">Рекомендуем попробовать</h2>
+    <div id="all-habits">
+        {% for rec in recommended %}
+        {% set has_icon = rec.icon and rec.icon != 'star' %}
+        <div class="habit-box recommended-box {% if not has_icon %}no-icon{% endif %}">
+            {% if has_icon %}
+            <div class="habit-img-wrapper">
+                <img class="habit-img-frame" src="{{ url_for('static', filename='images/frames/frame_1.png') }}" alt="">
+                <img class="habit-img" src="{{ url_for('static', filename=rec.icon) }}" alt="">
+            </div>
+            {% endif %}
+            <h1 class="habit-text">{{ rec.title }}</h1>
+            {% if rec.description %}
+            <p class="time-text">{{ rec.description }}</p>
+            {% endif %}
+            <div class="habit-actions">
+                <a class="recommended-add-btn" href="{{ url_for('auth.login') }}">Войти, чтобы добавить</a>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <!-- Финальный призыв -->
+    <div class="landing-final">
+        <p class="landing-final-text">Готовы начать?</p>
+        <a class="landing-btn landing-btn-primary" href="{{ url_for('auth.register') }}">Создать аккаунт</a>
+    </div>
+
+</section>
+{% endblock %}

@@ -163,7 +163,6 @@ def service_worker():
 def manifest():
     return current_app.send_static_file('manifest.json')
 
-
 # ===== Push-уведомления =====
 
 @main.route('/push/public-key')
@@ -234,6 +233,14 @@ def tutorial():
 
 
 @main.route('/')
+def index():
+    # Лендинг для гостей; авторизованных сразу ведём к их привычкам
+    if current_user.is_authenticated:
+        return redirect(url_for('main.habits'))
+    recommended = RecommendedHabit.query.order_by(RecommendedHabit.id).all()
+    return render_template('landing.html', recommended=recommended)
+
+
 @main.route('/habits')
 @login_required
 def habits():

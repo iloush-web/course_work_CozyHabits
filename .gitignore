@@ -11,3 +11,4 @@ DEPLOY.md
 app/static/uploads/*
 !app/static/uploads/.gitkeep
 .env.example
+КУРСОВАЯ_глава3.txt
