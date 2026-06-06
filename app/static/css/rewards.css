@@ -34,12 +34,11 @@
     padding: 10px;
 }
 
-/* Полка — награды в ряд с переносом */
+/* Полка — две колонки */
 .rewards-shelf {
-    display: flex;
-    flex-wrap: wrap;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
     gap: 10px;
-    align-items: flex-start;
 }
 
 /* Список за опыт — колонкой */
@@ -105,6 +104,7 @@
     font-size: 1rem;
     color: var(--dark-green);
     margin: 10px 0 5px;
+    grid-column: 1 / -1;   /* занимает всю ширину, не встаёт в колонку */
 }
 
 /* Закрытая (ещё не полученная) награда */
