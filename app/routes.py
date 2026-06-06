@@ -398,6 +398,24 @@ def rewards():
     )
 
 
+def _calc_streak(user_id: int) -> int:
+    """Сколько дней подряд (до сегодня включительно) хоть одна привычка выполнена."""
+    logs = (
+        db.session.query(HabitLog.log_date)
+        .filter(HabitLog.user_id == user_id, HabitLog.is_done.is_(True))
+        .distinct()
+        .order_by(HabitLog.log_date.desc())
+        .all()
+    )
+    dates = {row.log_date for row in logs}
+    streak = 0
+    day = date.today()
+    while day in dates:
+        streak += 1
+        day -= timedelta(days=1)
+    return streak
+
+
 @main.route('/profile')
 @login_required
 def profile():
@@ -431,11 +449,14 @@ def profile():
     )
     top_all = [{'user': u, 'value': u.experience} for u in all_rows]
 
+    streak = _calc_streak(current_user.id)
+
     return render_template(
         'profile.html',
         user=current_user,
         top_week=top_week,
         top_all=top_all,
+        streak=streak,
     )
 
 
